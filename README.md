@@ -1,6 +1,6 @@
 # uuid-php
 
-A small PHP class for generating [RFC 4122][rfc4122] version 3, 4, and 5 universally unique identifiers (UUID).
+A small PHP class for generating [RFC 4122](http://tools.ietf.org/html/rfc4122) version 3, 4, and 5 universally unique identifiers (UUID).
 
 If all you want is a unique ID, you should call `uuid4()`.
 
