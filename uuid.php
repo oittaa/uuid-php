@@ -39,7 +39,7 @@ class UUID
      */
     const NIL = '00000000-0000-0000-0000-000000000000';
 
-    private function getBytes($uuid) {
+    private static function getBytes($uuid) {
         if (!self::isValid($uuid)) {
             throw new InvalidArgumentException('Invalid UUID string: ' . $uuid);
         }
@@ -62,7 +62,7 @@ class UUID
         return $ustr;
     }
 
-    private function uuidFromHash($hash, $version) {
+    private static function uuidFromHash($hash, $version) {
         return sprintf('%08s-%04s-%04x-%04x-%12s',
         // 32 bits for "time_low"
             substr($hash, 0, 8),
