@@ -18,7 +18,7 @@ final class uuidTest extends TestCase
     public function testCanGenerateValidVersion4()
     {
         $uuid1 = UUID::uuid4();
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             '/^[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}$/',
             $uuid1
         );
