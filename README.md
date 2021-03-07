@@ -1,3 +1,5 @@
+[![CI](https://github.com/oittaa/uuid-php/actions/workflows/main.yml/badge.svg)](https://github.com/oittaa/uuid-php/actions/workflows/main.yml)
+
 # uuid-php
 
 A small PHP class for generating [RFC 4122](http://tools.ietf.org/html/rfc4122) version 3, 4, and 5 universally unique identifiers (UUID).
