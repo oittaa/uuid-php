@@ -102,7 +102,7 @@ class UUID
      * @return string
      */
     public static function uuid4() {
-        $bytes = function_exists('random_bytes') ? random_bytes(16) : openssl_random_pseudo_bytes(16);
+        $bytes = random_bytes(16);
         $hash = bin2hex($bytes);
         return self::uuidFromHash($hash, 4);
     }
