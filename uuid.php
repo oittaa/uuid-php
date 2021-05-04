@@ -142,6 +142,9 @@ class UUID
         $time = microtime(false);
         $time = substr($time, 11) . substr($time, 2, 7);
         $time = str_pad(dechex($time + self::TIME_OFFSET_INT), 16, '0', \STR_PAD_LEFT);
+        $time = sprintf('%012s6%03s',
+            substr($time, -15, 12),
+            substr($time, -3));
         $bytes = random_bytes(8);
         $hash = $time . bin2hex($bytes);
         return self::uuidFromHash($hash, 6);
