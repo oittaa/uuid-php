@@ -39,6 +39,13 @@ class UUID
      */
     const NIL = '00000000-0000-0000-0000-000000000000';
 
+    /**
+     * 0x01b21dd213814000 is the number of 100-ns intervals between the
+     * UUID epoch 1582-10-15 00:00:00 and the Unix epoch 1970-01-01 00:00:00.
+     * @link https://tools.ietf.org/html/rfc4122#section-4.1.4
+     */
+    const TIME_OFFSET_INT = 0x01b21dd213814000;
+
     private static function getBytes($uuid) {
         if (!self::isValid($uuid)) {
             throw new InvalidArgumentException('Invalid UUID string: ' . $uuid);
@@ -122,6 +129,22 @@ class UUID
         $hash = sha1($nbytes . $name);
 
         return self::uuidFromHash($hash, 5);
+    }
+
+    /**
+     * Generate a version 6 UUID. A v6 UUID is lexicographically sortable and contains
+     * a 60-bit timestamp and 62 extra unique bits. Unlike version 1 UUID, this
+     * implementation of verion 6 UUID doesn't leak the MAC address of the host.
+     *
+     * @return string
+     */
+    public static function uuid6() {
+        $time = microtime(false);
+        $time = substr($time, 11) . substr($time, 2, 7);
+        $time = str_pad(dechex($time + self::TIME_OFFSET_INT), 16, '0', \STR_PAD_LEFT);
+        $bytes = random_bytes(8);
+        $hash = $time . bin2hex($bytes);
+        return self::uuidFromHash($hash, 6);
     }
 
     /**

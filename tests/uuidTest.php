@@ -37,6 +37,20 @@ final class uuidTest extends TestCase
         );
     }
 
+    public function testCanGenerateValidVersion6()
+    {
+        $uuid1 = UUID::uuid6();
+        for ($x = 0; $x <= 10; $x++) {
+            usleep(10);
+            $uuid2 = UUID::uuid6();
+            $this->assertGreaterThan(
+                $uuid1,
+                $uuid2
+            );
+            $uuid1 = $uuid2;
+        }
+    }
+
     public function testCannotBeCreatedFromInvalidNamespace()
     {
         $this->expectException(InvalidArgumentException::class);
