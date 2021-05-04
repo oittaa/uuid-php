@@ -26,7 +26,9 @@ echo $uuid5 . "\n"; // c4a760a8-dbcf-5254-a0d9-6a4474bd1b62
 
 // Generate a version 6 (lexicographically sortable) UUID
 $uuid6 = UUID::uuid6();
-echo $uuid6 . "\n"; // e.g. 01ebac71-3f9f-6d7a-9b31-23fb37411adc
+echo $uuid6 . "\n"; // e.g. 1ebacf4f-a4a8-68ee-b4ec-618c14d005d5
+$uuid6_2 = UUID::uuid6();
+var_dump($uuid6 < $uuid6_2); // bool(true)
 
 // Test if a given string is a valid UUID
 $isvalid = UUID::isValid('11a38b9a-b3da-360f-9353-a5a725514269');
