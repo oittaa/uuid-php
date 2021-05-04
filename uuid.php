@@ -134,7 +134,7 @@ class UUID
     /**
      * Generate a version 6 UUID. A v6 UUID is lexicographically sortable and contains
      * a 60-bit timestamp and 62 extra unique bits. Unlike version 1 UUID, this
-     * implementation of verion 6 UUID doesn't leak the MAC address of the host.
+     * implementation of version 6 UUID doesn't leak the MAC address of the host.
      *
      * @return string
      */
