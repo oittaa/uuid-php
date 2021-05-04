@@ -41,11 +41,11 @@ final class uuidTest extends TestCase
     {
         $uuid1 = UUID::uuid6();
         for ($x = 0; $x <= 10; $x++) {
-            usleep(100);
+            usleep(10);
             $uuid2 = UUID::uuid6();
             $this->assertGreaterThan(
-                $uuid1,
-                $uuid2
+                $uuid2,
+                $uuid1
             );
             $uuid1 = $uuid2;
         }
