@@ -55,7 +55,7 @@ final class UUIDTest extends TestCase
 
     public function testCannotBeCreatedFromInvalidNamespace()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         UUID::uuid5('invalid', 'php.net');
     }

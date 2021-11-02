@@ -52,7 +52,7 @@ class UUID
     private static function getBytes($uuid)
     {
         if (!self::isValid($uuid)) {
-            throw new InvalidArgumentException('Invalid UUID string: ' . $uuid);
+            throw new \InvalidArgumentException('Invalid UUID string: ' . $uuid);
         }
         // Get hexadecimal components of UUID
         $uhex = str_replace(array(
