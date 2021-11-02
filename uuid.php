@@ -1,4 +1,7 @@
 <?php
+
+namespace UUID;
+
 /**
  * Represents a universally unique identifier (UUID), according to RFC 4122.
  *
@@ -17,38 +20,39 @@ class UUID
      * When this namespace is specified, the name string is a fully-qualified domain name.
      * @link http://tools.ietf.org/html/rfc4122#appendix-C
      */
-    const NAMESPACE_DNS = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+    public const NAMESPACE_DNS = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
     /**
      * When this namespace is specified, the name string is a URL.
      * @link http://tools.ietf.org/html/rfc4122#appendix-C
      */
-    const NAMESPACE_URL = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
+    public const NAMESPACE_URL = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
     /**
      * When this namespace is specified, the name string is an ISO OID.
      * @link http://tools.ietf.org/html/rfc4122#appendix-C
      */
-    const NAMESPACE_OID = '6ba7b812-9dad-11d1-80b4-00c04fd430c8';
+    public const NAMESPACE_OID = '6ba7b812-9dad-11d1-80b4-00c04fd430c8';
     /**
      * When this namespace is specified, the name string is an X.500 DN in DER or a text output format.
      * @link http://tools.ietf.org/html/rfc4122#appendix-C
      */
-    const NAMESPACE_X500 = '6ba7b814-9dad-11d1-80b4-00c04fd430c8';
+    public const NAMESPACE_X500 = '6ba7b814-9dad-11d1-80b4-00c04fd430c8';
     /**
      * The nil UUID is special form of UUID that is specified to have all 128 bits set to zero.
      * @link http://tools.ietf.org/html/rfc4122#section-4.1.7
      */
-    const NIL = '00000000-0000-0000-0000-000000000000';
+    public const NIL = '00000000-0000-0000-0000-000000000000';
 
     /**
      * 0x01b21dd213814000 is the number of 100-ns intervals between the
      * UUID epoch 1582-10-15 00:00:00 and the Unix epoch 1970-01-01 00:00:00.
      * @link https://tools.ietf.org/html/rfc4122#section-4.1.4
      */
-    const TIME_OFFSET_INT = 0x01b21dd213814000;
+    public const TIME_OFFSET_INT = 0x01b21dd213814000;
 
-    private static function getBytes($uuid) {
+    private static function getBytes($uuid)
+    {
         if (!self::isValid($uuid)) {
-            throw new InvalidArgumentException('Invalid UUID string: ' . $uuid);
+            throw new \InvalidArgumentException('Invalid UUID string: ' . $uuid);
         }
         // Get hexadecimal components of UUID
         $uhex = str_replace(array(
@@ -69,21 +73,24 @@ class UUID
         return $ustr;
     }
 
-    private static function uuidFromHash($hash, $version) {
-        return sprintf('%08s-%04s-%04x-%04x-%12s',
-        // 32 bits for "time_low"
+    private static function uuidFromHash($hash, $version)
+    {
+        return sprintf(
+            '%08s-%04s-%04x-%04x-%12s',
+            // 32 bits for "time_low"
             substr($hash, 0, 8),
-        // 16 bits for "time_mid"
+            // 16 bits for "time_mid"
             substr($hash, 8, 4),
-        // 16 bits for "time_hi_and_version",
-        // four most significant bits holds version number
+            // 16 bits for "time_hi_and_version",
+            // four most significant bits holds version number
             (hexdec(substr($hash, 12, 4)) & 0x0fff) | $version << 12,
-        // 16 bits, 8 bits for "clk_seq_hi_res",
-        // 8 bits for "clk_seq_low",
-        // two most significant bits holds zero and one for variant DCE1.1
+            // 16 bits, 8 bits for "clk_seq_hi_res",
+            // 8 bits for "clk_seq_low",
+            // two most significant bits holds zero and one for variant DCE1.1
             (hexdec(substr($hash, 16, 4)) & 0x3fff) | 0x8000,
-        // 48 bits for "node"
-            substr($hash, 20, 12));
+            // 48 bits for "node"
+            substr($hash, 20, 12)
+        );
     }
 
     /**
@@ -94,7 +101,8 @@ class UUID
      * @param string $name The name to create a UUID for
      * @return string
      */
-    public static function uuid3($namespace, $name) {
+    public static function uuid3($namespace, $name)
+    {
         $nbytes = self::getBytes($namespace);
 
         // Calculate hash value
@@ -108,7 +116,8 @@ class UUID
      *
      * @return string
      */
-    public static function uuid4() {
+    public static function uuid4()
+    {
         $bytes = random_bytes(16);
         $hash = bin2hex($bytes);
         return self::uuidFromHash($hash, 4);
@@ -122,7 +131,8 @@ class UUID
      * @param string $name The name to create a UUID for
      * @return string
      */
-    public static function uuid5($namespace, $name) {
+    public static function uuid5($namespace, $name)
+    {
         $nbytes = self::getBytes($namespace);
 
         // Calculate hash value
@@ -138,13 +148,16 @@ class UUID
      *
      * @return string
      */
-    public static function uuid6() {
+    public static function uuid6()
+    {
         $time = microtime(false);
         $time = substr($time, 11) . substr($time, 2, 7);
         $time = str_pad(dechex($time + self::TIME_OFFSET_INT), 16, '0', \STR_PAD_LEFT);
-        $time = sprintf('%012s6%03s',
+        $time = sprintf(
+            '%012s6%03s',
             substr($time, -15, 12),
-            substr($time, -3));
+            substr($time, -3)
+        );
         $bytes = random_bytes(8);
         $hash = $time . bin2hex($bytes);
         return self::uuidFromHash($hash, 6);
@@ -156,8 +169,10 @@ class UUID
      * @param string $uuid The string UUID to test
      * @return boolean
      */
-    public static function isValid($uuid) {
-        return preg_match('/^(urn:)?(uuid:)?(\{)?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{12}(?(3)\}|)$/i', $uuid) === 1;
+    public static function isValid($uuid)
+    {
+        return preg_match('/^(urn:)?(uuid:)?(\{)?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}'
+        . '\-?[0-9a-f]{4}\-?[0-9a-f]{12}(?(3)\}|)$/i', $uuid) === 1;
     }
 
     /**
@@ -167,7 +182,8 @@ class UUID
      * @param string $uuid2 The second UUID to test
      * @return boolean
      */
-    public static function equals($uuid1, $uuid2) {
+    public static function equals($uuid1, $uuid2)
+    {
         return self::getBytes($uuid1) === self::getBytes($uuid2);
     }
 }

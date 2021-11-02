@@ -1,11 +1,13 @@
 <?php
 
+namespace UUID;
+
 use PHPUnit\Framework\TestCase;
 
 /**
  * @covers UUID
  */
-final class uuidTest extends TestCase
+final class UUIDTest extends TestCase
 {
     public function testCanGenerateValidVersion3()
     {
@@ -41,7 +43,7 @@ final class uuidTest extends TestCase
     {
         $uuid1 = UUID::uuid6();
         for ($x = 0; $x <= 10; $x++) {
-            usleep(10);
+            usleep(1);
             $uuid2 = UUID::uuid6();
             $this->assertGreaterThan(
                 $uuid1,
@@ -53,7 +55,7 @@ final class uuidTest extends TestCase
 
     public function testCannotBeCreatedFromInvalidNamespace()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         UUID::uuid5('invalid', 'php.net');
     }
