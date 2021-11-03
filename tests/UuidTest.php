@@ -5,7 +5,7 @@ namespace UUID;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers UUID
+ * @covers \UUID\UUID
  */
 final class UuidTest extends TestCase
 {
