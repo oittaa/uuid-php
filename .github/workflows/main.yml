@@ -40,7 +40,7 @@ jobs:
     - name: Install dependencies
       run: composer install
     - name: PHPBench
-      run: phpbench run
+      run: phpbench run -q --report=aggregate --
 
 
   unit-tests:
