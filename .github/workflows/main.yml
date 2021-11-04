@@ -21,7 +21,7 @@ jobs:
         php-version: '8.0'
         tools: cs2pr, phpcs
     - name: Run phpcs
-      run: phpcs -q --report=checkstyle *.php tests/*.php | cs2pr
+      run: phpcs -q --report=checkstyle src/*.php tests/*.php | cs2pr
   
   unit-tests:
     runs-on: ubuntu-20.04
@@ -34,6 +34,12 @@ jobs:
       uses: shivammathur/setup-php@2.15.0
       with:
         php-version: ${{ matrix.php-versions }}   
-        tools: phpunit
+        tools: composer, phpunit
+    - name: Install dependencies
+      run: composer install
     - name: PHPUnit
-      run: phpunit --coverage-text --whitelist uuid.php --bootstrap uuid.php tests
+      run: phpunit --coverage-clover coverage.xml
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2.1.0
+      with:
+        flags: unittests

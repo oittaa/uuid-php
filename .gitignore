@@ -1,4 +1,6 @@
 composer.lock
+coverage.xml
 vendor/*
 phpcs-report.xml
 .php-cs-fixer.cache
+.phpunit.cache
