@@ -40,6 +40,6 @@ jobs:
     - name: PHPUnit
       run: phpunit --coverage-clover coverage.xml
     - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2.1.0
-        with:
-          flags: unittests
+      uses: codecov/codecov-action@v2.1.0
+      with:
+        flags: unittests
