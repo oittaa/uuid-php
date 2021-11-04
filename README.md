@@ -6,12 +6,18 @@ A small PHP class for generating [RFC 4122](http://tools.ietf.org/html/rfc4122) 
 
 If all you want is a unique ID, you should call `uuid4()`.
 
-## Examples
+## Installation
+
+```bash
+composer require oittaa/uuid
+```
+
+## Usage
 
 ```php
 <?php
 
-require_once 'uuid.php';
+require 'vendor/autoload.php';
 
 use UUID\UUID;
 

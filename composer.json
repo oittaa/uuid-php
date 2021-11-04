@@ -1,0 +1,19 @@
+{
+    "name": "oittaa/uuid",
+    "type": "library",
+    "description": "A small PHP class for generating RFC 4122 version 3, 4, 5, and 6 (draft) universally unique identifiers (UUID).",
+    "keywords": [
+        "uuid",
+        "identifier",
+        "guid"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^7.4 || ^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "UUID\\": "src/"
+        }
+    }
+}

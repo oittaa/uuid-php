@@ -1,8 +1,11 @@
 <?php
 
-namespace UUID;
+declare(strict_types=1);
+
+namespace UUID\Test;
 
 use PHPUnit\Framework\TestCase;
+use UUID\UUID;
 
 /**
  * @covers \UUID\UUID
@@ -11,7 +14,7 @@ final class UuidTest extends TestCase
 {
     public function testCanGenerateValidVersion3()
     {
-        $this->assertEquals(
+        $this->assertSame(
             '11a38b9a-b3da-360f-9353-a5a725514269',
             UUID::uuid3(UUID::NAMESPACE_DNS, 'php.net')
         );
@@ -33,7 +36,7 @@ final class UuidTest extends TestCase
 
     public function testCanGenerateValidVersion5()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'c4a760a8-dbcf-5254-a0d9-6a4474bd1b62',
             UUID::uuid5(UUID::NAMESPACE_DNS, 'php.net')
         );
@@ -97,11 +100,11 @@ final class UuidTest extends TestCase
 
     public function testCanGetVersion()
     {
-        $this->assertEquals(
+        $this->assertSame(
             3,
             UUID::getVersion('11a38b9a-b3da-360f-9353-a5a725514269')
         );
-        $this->assertEquals(
+        $this->assertSame(
             5,
             UUID::getVersion('c4a760a8-dbcf-5254-a0d9-6a4474bd1b62')
         );
@@ -109,7 +112,7 @@ final class UuidTest extends TestCase
 
     public function testCanCompare()
     {
-        $this->assertEquals(
+        $this->assertSame(
             0,
             UUID::cmp('c4a760a8-dbcf-5254-a0d9-6a4474bd1b62', 'C4A760A8-DBCF-5254-A0D9-6A4474BD1B62')
         );
@@ -121,7 +124,7 @@ final class UuidTest extends TestCase
 
     public function testToString()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'c4a760a8-dbcf-5254-a0d9-6a4474bd1b62',
             UUID::toString('{C4A760A8-DBCF-5254-A0D9-6A4474BD1B62}')
         );
@@ -129,19 +132,19 @@ final class UuidTest extends TestCase
 
     public function testCanUseAliases()
     {
-        $this->assertEquals(
+        $this->assertSame(
             '11a38b9a-b3da-360f-9353-a5a725514269',
             UUID::v3(UUID::NAMESPACE_DNS, 'php.net')
         );
-        $this->assertEquals(
+        $this->assertSame(
             4,
             UUID::getVersion(UUID::v4())
         );
-        $this->assertEquals(
+        $this->assertSame(
             'c4a760a8-dbcf-5254-a0d9-6a4474bd1b62',
             UUID::v5(UUID::NAMESPACE_DNS, 'php.net')
         );
-        $this->assertEquals(
+        $this->assertSame(
             6,
             UUID::getVersion(UUID::v6())
         );
