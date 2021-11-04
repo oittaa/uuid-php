@@ -23,15 +23,18 @@ final class UuidTest extends TestCase
     public function testCanGenerateValidVersion4()
     {
         $uuid1 = UUID::uuid4();
-        $this->assertMatchesRegularExpression(
-            '/^[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}$/',
-            $uuid1
-        );
-        $uuid2 = UUID::uuid4();
-        $this->assertNotEquals(
-            $uuid1,
-            $uuid2
-        );
+        for ($x = 0; $x < 10; $x++) {
+            $this->assertMatchesRegularExpression(
+                '/^[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}$/',
+                $uuid1
+            );
+            $uuid2 = UUID::uuid4();
+            $this->assertNotEquals(
+                $uuid1,
+                $uuid2
+            );
+            $uuid1 = $uuid2;
+        }
     }
 
     public function testCanGenerateValidVersion5()
@@ -45,7 +48,11 @@ final class UuidTest extends TestCase
     public function testCanGenerateValidVersion6()
     {
         $uuid1 = UUID::uuid6();
-        for ($x = 0; $x <= 10; $x++) {
+        for ($x = 0; $x < 10; $x++) {
+            $this->assertMatchesRegularExpression(
+                '/^[0-9a-f]{8}\-[0-9a-f]{4}\-6[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}$/',
+                $uuid1
+            );
             usleep(1);
             $uuid2 = UUID::uuid6();
             $this->assertGreaterThan(

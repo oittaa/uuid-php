@@ -7,7 +7,25 @@ A small PHP class for generating [RFC 4122](http://tools.ietf.org/html/rfc4122) 
 
 If all you want is a unique ID, you should call `uuid4()`.
 
+## Minimal UUID v4 implementation
+
+Credits go to [this answer](https://stackoverflow.com/a/15875555) on Stackoverflow for this minimal RFC 4122 compliant solution.
+```php
+<?php
+function uuid4()
+{
+    $data = random_bytes(16);
+    $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
+    $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+}
+
+echo uuid4();
+```
+
 ## Installation
+
+If you need comparison tools or sortable identifiers like in version 6, you might find this small and fast package useful. It doesn't require any other dependencies.
 
 ```bash
 composer require oittaa/uuid
