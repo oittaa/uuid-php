@@ -1,4 +1,5 @@
 [![CI](https://github.com/oittaa/uuid-php/actions/workflows/main.yml/badge.svg)](https://github.com/oittaa/uuid-php/actions/workflows/main.yml)
+[![codecov](https://codecov.io/gh/oittaa/uuid-php/branch/master/graph/badge.svg?token=TZILVOSUKM)](https://codecov.io/gh/oittaa/uuid-php)
 
 # uuid-php
 
