@@ -16,9 +16,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2.4.0
     - name: Setup PHP
-      uses: shivammathur/setup-php@2.15.0
+      uses: shivammathur/setup-php@2.16.0
       with:
-        php-version: '8.0'
+        php-version: '8.1'
         tools: cs2pr, phpcs
     - name: Run phpcs
       run: phpcs -q --report=checkstyle src/ tests/ | cs2pr
@@ -27,11 +27,11 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        php-versions: ['7.4', '8.0', '8.1']
+        php-versions: ['7.4', '8.0', '8.1', '8.2']
     steps:
     - uses: actions/checkout@v2.4.0
     - name: Setup PHP
-      uses: shivammathur/setup-php@2.15.0
+      uses: shivammathur/setup-php@2.16.0
       with:
         php-version: ${{ matrix.php-versions }}   
         tools: composer, phpbench/phpbench
@@ -47,11 +47,11 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        php-versions: ['7.4', '8.0', '8.1']
+        php-versions: ['7.4', '8.0', '8.1', '8.2']
     steps:
     - uses: actions/checkout@v2.4.0
     - name: Setup PHP
-      uses: shivammathur/setup-php@2.15.0
+      uses: shivammathur/setup-php@2.16.0
       with:
         php-version: ${{ matrix.php-versions }}   
         tools: composer, phpunit
