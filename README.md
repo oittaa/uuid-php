@@ -3,7 +3,7 @@
 
 # uuid-php
 
-A small PHP class for generating [RFC 4122](http://tools.ietf.org/html/rfc4122) version 3, 4, 5, and 6 ([draft](https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-02)) universally unique identifiers (UUID).
+A small PHP class for generating [RFC 4122](http://tools.ietf.org/html/rfc4122) version 3, 4, and 5 universally unique identifiers (UUID). Additionally supports [draft](https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-02) versions 6 and 7.
 
 If all you want is a unique ID, you should call `uuid4()`.
 
@@ -25,7 +25,7 @@ echo uuid4();
 
 ## Installation
 
-If you need comparison tools or sortable identifiers like in version 6, you might find this small and fast package useful. It doesn't require any other dependencies.
+If you need comparison tools or sortable identifiers like in versions 6 and 7, you might find this small and fast package useful. It doesn't require any other dependencies.
 
 ```bash
 composer require oittaa/uuid
@@ -57,6 +57,12 @@ $uuid6_first = UUID::uuid6();
 echo $uuid6_first . "\n"; // e.g. 1ebacf4f-a4a8-68ee-b4ec-618c14d005d5
 $uuid6_second = UUID::uuid6();
 var_dump($uuid6_first < $uuid6_second); // bool(true)
+
+// Generate a version 7 (lexicographically sortable) UUID
+$uuid7_first = UUID::uuid7();
+echo $uuid7_first . "\n"; // e.g. 061a3d43-61d0-7cf4-bfce-753dadab55e1
+$uuid7_second = UUID::uuid7();
+var_dump($uuid7_first < $uuid7_second); // bool(true)
 
 // Test if a given string is a valid UUID
 $isvalid = UUID::isValid('11a38b9a-b3da-360f-9353-a5a725514269');

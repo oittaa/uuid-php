@@ -177,6 +177,30 @@ class UUID
     }
 
     /**
+     * Generate a version 7 UUID. A v7 UUID is lexicographically sortable and is
+     * designed to encode a Unix timestamp with arbitrary sub-second precision.
+     *
+     * @return string The string standard representation of the UUID
+     */
+    public static function uuid7()
+    {
+        $time = microtime(false);
+        $unixts = substr($time, 11);
+        $subsec = substr($time, 2, 7);
+        $unixts = str_pad(dechex(intval($unixts, 10)), 9, '0', \STR_PAD_LEFT);
+        $subsec = str_pad(dechex(intval($subsec, 10)), 6, '0', \STR_PAD_LEFT);
+        $time = sprintf(
+            '%09s%03s7%03s',
+            $unixts,
+            substr($subsec, 0, 3),
+            substr($subsec, -3)
+        );
+        $bytes = random_bytes(8);
+        $hash = $time . bin2hex($bytes);
+        return self::uuidFromHash($hash, 7);
+    }
+
+    /**
      * Check if a string is a valid UUID.
      *
      * @param string $uuid The string UUID to test
@@ -275,5 +299,13 @@ class UUID
     public static function v6()
     {
         return self::uuid6();
+    }
+    /**
+     * @see UUID::uuid7() Alias
+     * @return string
+     */
+    public static function v7()
+    {
+        return self::uuid7();
     }
 }
