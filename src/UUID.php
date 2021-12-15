@@ -66,6 +66,7 @@ class UUID
     /** @internal */
     private static $subsec = 0;
 
+    /** @internal */
     private static function getUnixTime()
     {
         $timestamp = microtime(false);
