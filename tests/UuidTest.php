@@ -53,7 +53,6 @@ final class UuidTest extends TestCase
                 '/^[0-9a-f]{8}\-[0-9a-f]{4}\-6[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}$/',
                 $uuid1
             );
-            usleep(1);
             $uuid2 = UUID::uuid6();
             $this->assertGreaterThan(
                 $uuid1,
@@ -75,7 +74,6 @@ final class UuidTest extends TestCase
                 '/^[0-9a-f]{8}\-[0-9a-f]{4}\-7[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}$/',
                 $uuid1
             );
-            usleep(1);
             $uuid2 = UUID::uuid7();
             $this->assertGreaterThan(
                 $uuid1,

@@ -61,6 +61,32 @@ class UUID
     private const REPLACE_ARR = array('urn:', 'uuid:', '-', '{', '}');
 
     /** @internal */
+    private static $unixts = 0;
+
+    /** @internal */
+    private static $subsec = 0;
+
+    private static function getUnixTime()
+    {
+        $timestamp = microtime(false);
+        $unixts = intval(substr($timestamp, 11), 10);
+        $subsec = intval(substr($timestamp, 2, 7), 10);
+        if (self::$unixts > $unixts || self::$unixts === $unixts && self::$subsec >= $subsec) {
+            $unixts = self::$unixts;
+            $subsec = self::$subsec;
+            if ($subsec === 9999999) {
+                $subsec = 0;
+                $unixts++;
+            } else {
+                $subsec++;
+            }
+        }
+        self::$unixts = $unixts;
+        self::$subsec = $subsec;
+        return [$unixts, $subsec];
+    }
+
+    /** @internal */
     private static function stripExtras($uuid)
     {
         if (!self::isValid($uuid)) {
@@ -86,23 +112,23 @@ class UUID
     }
 
     /** @internal */
-    private static function uuidFromHash($hash, $version)
+    private static function uuidFromHex($uhex, $version)
     {
         return sprintf(
             '%08s-%04s-%04x-%04x-%12s',
             // 32 bits for "time_low"
-            substr($hash, 0, 8),
+            substr($uhex, 0, 8),
             // 16 bits for "time_mid"
-            substr($hash, 8, 4),
+            substr($uhex, 8, 4),
             // 16 bits for "time_hi_and_version",
             // four most significant bits holds version number
-            (hexdec(substr($hash, 12, 4)) & 0x0fff) | $version << 12,
+            (hexdec(substr($uhex, 12, 4)) & 0x0fff) | $version << 12,
             // 16 bits, 8 bits for "clk_seq_hi_res",
             // 8 bits for "clk_seq_low",
             // two most significant bits holds zero and one for variant DCE1.1
-            (hexdec(substr($hash, 16, 4)) & 0x3fff) | 0x8000,
+            (hexdec(substr($uhex, 16, 4)) & 0x3fff) | 0x8000,
             // 48 bits for "node"
-            substr($hash, 20, 12)
+            substr($uhex, 20, 12)
         );
     }
 
@@ -119,9 +145,9 @@ class UUID
         $nbytes = self::getBytes($namespace);
 
         // Calculate hash value
-        $hash = md5($nbytes . $name);
+        $uhex = md5($nbytes . $name);
 
-        return self::uuidFromHash($hash, 3);
+        return self::uuidFromHex($uhex, 3);
     }
 
     /**
@@ -132,8 +158,8 @@ class UUID
     public static function uuid4()
     {
         $bytes = random_bytes(16);
-        $hash = bin2hex($bytes);
-        return self::uuidFromHash($hash, 4);
+        $uhex = bin2hex($bytes);
+        return self::uuidFromHex($uhex, 4);
     }
 
     /**
@@ -149,9 +175,9 @@ class UUID
         $nbytes = self::getBytes($namespace);
 
         // Calculate hash value
-        $hash = sha1($nbytes . $name);
+        $uhex = sha1($nbytes . $name);
 
-        return self::uuidFromHash($hash, 5);
+        return self::uuidFromHex($uhex, 5);
     }
 
     /**
@@ -163,8 +189,8 @@ class UUID
      */
     public static function uuid6()
     {
-        $time = microtime(false);
-        $time = substr($time, 11) . substr($time, 2, 7);
+        [$unixts, $subsec] = self::getUnixTime();
+        $time = $unixts * 10 ** 7 + $subsec;
         $time = str_pad(dechex($time + self::TIME_OFFSET_INT), 16, '0', \STR_PAD_LEFT);
         $time = sprintf(
             '%012s6%03s',
@@ -172,8 +198,8 @@ class UUID
             substr($time, -3)
         );
         $bytes = random_bytes(8);
-        $hash = $time . bin2hex($bytes);
-        return self::uuidFromHash($hash, 6);
+        $uhex = $time . bin2hex($bytes);
+        return self::uuidFromHex($uhex, 6);
     }
 
     /**
@@ -184,11 +210,9 @@ class UUID
      */
     public static function uuid7()
     {
-        $time = microtime(false);
-        $unixts = substr($time, 11);
-        $subsec = substr($time, 2, 7);
-        $unixts = str_pad(dechex(intval($unixts, 10)), 9, '0', \STR_PAD_LEFT);
-        $subsec = str_pad(dechex(intval($subsec, 10)), 6, '0', \STR_PAD_LEFT);
+        [$unixts, $subsec] = self::getUnixTime();
+        $unixts = str_pad(dechex($unixts), 9, '0', \STR_PAD_LEFT);
+        $subsec = str_pad(dechex($subsec), 6, '0', \STR_PAD_LEFT);
         $time = sprintf(
             '%09s%03s7%03s',
             $unixts,
@@ -196,8 +220,8 @@ class UUID
             substr($subsec, -3)
         );
         $bytes = random_bytes(8);
-        $hash = $time . bin2hex($bytes);
-        return self::uuidFromHash($hash, 7);
+        $uhex = $time . bin2hex($bytes);
+        return self::uuidFromHex($uhex, 7);
     }
 
     /**
