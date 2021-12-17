@@ -75,7 +75,7 @@ class UUID
         if (self::$unixts > $unixts || self::$unixts === $unixts && self::$subsec >= $subsec) {
             $unixts = self::$unixts;
             $subsec = self::$subsec;
-            if ($subsec === 9999999) {
+            if ($subsec >= 9999999) {
                 $subsec = 0;
                 $unixts++;
             } else {
@@ -141,13 +141,10 @@ class UUID
      * @param string $name The name to create a UUID for
      * @return string The string standard representation of the UUID
      */
-    public static function uuid3($namespace, $name)
+    public static function uuid3(string $namespace, string $name): string
     {
         $nbytes = self::getBytes($namespace);
-
-        // Calculate hash value
         $uhex = md5($nbytes . $name);
-
         return self::uuidFromHex($uhex, 3);
     }
 
@@ -156,10 +153,9 @@ class UUID
      *
      * @return string The string standard representation of the UUID
      */
-    public static function uuid4()
+    public static function uuid4(): string
     {
-        $bytes = random_bytes(16);
-        $uhex = bin2hex($bytes);
+        $uhex = bin2hex(random_bytes(16));
         return self::uuidFromHex($uhex, 4);
     }
 
@@ -171,13 +167,10 @@ class UUID
      * @param string $name The name to create a UUID for
      * @return string The string standard representation of the UUID
      */
-    public static function uuid5($namespace, $name)
+    public static function uuid5(string $namespace, string $name): string
     {
         $nbytes = self::getBytes($namespace);
-
-        // Calculate hash value
         $uhex = sha1($nbytes . $name);
-
         return self::uuidFromHex($uhex, 5);
     }
 
@@ -188,18 +181,17 @@ class UUID
      *
      * @return string The string standard representation of the UUID
      */
-    public static function uuid6()
+    public static function uuid6(): string
     {
         [$unixts, $subsec] = self::getUnixTime();
-        $time = $unixts * 10 ** 7 + $subsec;
-        $time = str_pad(dechex($time + self::TIME_OFFSET_INT), 16, '0', \STR_PAD_LEFT);
-        $time = sprintf(
+        $timestamp = $unixts * 10 ** 7 + $subsec;
+        $timehex = str_pad(dechex($timestamp + self::TIME_OFFSET_INT), 16, '0', \STR_PAD_LEFT);
+        $uhex = sprintf(
             '%012s6%03s',
-            substr($time, -15, 12),
-            substr($time, -3)
+            substr($timehex, -15, 12),
+            substr($timehex, -3)
         );
-        $bytes = random_bytes(8);
-        $uhex = $time . bin2hex($bytes);
+        $uhex .= bin2hex(random_bytes(8));
         return self::uuidFromHex($uhex, 6);
     }
 
@@ -209,19 +201,17 @@ class UUID
      *
      * @return string The string standard representation of the UUID
      */
-    public static function uuid7()
+    public static function uuid7(): string
     {
         [$unixts, $subsec] = self::getUnixTime();
-        $unixts = str_pad(dechex($unixts), 9, '0', \STR_PAD_LEFT);
-        $subsec = str_pad(dechex($subsec), 6, '0', \STR_PAD_LEFT);
-        $time = sprintf(
-            '%09s%03s7%03s',
-            $unixts,
-            substr($subsec, 0, 3),
-            substr($subsec, -3)
+        $uhex = str_pad(dechex($unixts), 9, '0', \STR_PAD_LEFT);
+        $shex = str_pad(dechex($subsec), 6, '0', \STR_PAD_LEFT);
+        $uhex .= sprintf(
+            '%03s7%03s',
+            substr($shex, 0, 3),
+            substr($shex, -3)
         );
-        $bytes = random_bytes(8);
-        $uhex = $time . bin2hex($bytes);
+        $uhex .= bin2hex(random_bytes(8));
         return self::uuidFromHex($uhex, 7);
     }
 
@@ -231,7 +221,7 @@ class UUID
      * @param string $uuid The string UUID to test
      * @return boolean Returns `true` if uuid is valid, `false` otherwise
      */
-    public static function isValid($uuid)
+    public static function isValid(string $uuid): bool
     {
         return preg_match('/^(urn:)?(uuid:)?(\{)?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}'
         . '\-?[0-9a-f]{4}\-?[0-9a-f]{12}(?(3)\}|)$/i', $uuid) === 1;
@@ -244,7 +234,7 @@ class UUID
      * @param string $uuid2 The second UUID to test
      * @return boolean Returns `true` if uuid1 is equal to uuid2, `false` otherwise
      */
-    public static function equals($uuid1, $uuid2)
+    public static function equals(string $uuid1, string $uuid2): bool
     {
         return self::getBytes($uuid1) === self::getBytes($uuid2);
     }
@@ -255,7 +245,7 @@ class UUID
      * @param string $uuid The UUID string
      * @return int Version number of the UUID
      */
-    public static function getVersion($uuid)
+    public static function getVersion(string $uuid): int
     {
         $bytes = unpack('n*', self::getBytes($uuid));
         return (int) $bytes[4] >> 12;
@@ -269,7 +259,7 @@ class UUID
      * @return int Returns < 0 if uuid1 is less than uuid2; > 0 if uuid1 is
      *             greater than uuid2, and 0 if they are equal.
      */
-    public static function cmp($uuid1, $uuid2)
+    public static function cmp(string $uuid1, string $uuid2): int
     {
         return strcmp(self::getBytes($uuid1), self::getBytes($uuid2));
     }
@@ -280,7 +270,7 @@ class UUID
      * @param string $uuid The UUID string
      * @return string The string standard representation of the UUID
      */
-    public static function toString($uuid)
+    public static function toString(string $uuid): string
     {
         $uhex = strtolower(self::stripExtras($uuid));
         return sprintf(
@@ -297,7 +287,7 @@ class UUID
      * @see UUID::uuid3() Alias
      * @return string
      */
-    public static function v3(...$args)
+    public static function v3(...$args): string
     {
         return self::uuid3(...$args);
     }
@@ -305,7 +295,7 @@ class UUID
      * @see UUID::uuid4() Alias
      * @return string
      */
-    public static function v4()
+    public static function v4(): string
     {
         return self::uuid4();
     }
@@ -313,7 +303,7 @@ class UUID
      * @see UUID::uuid5() Alias
      * @return string
      */
-    public static function v5(...$args)
+    public static function v5(...$args): string
     {
         return self::uuid5(...$args);
     }
@@ -321,7 +311,7 @@ class UUID
      * @see UUID::uuid6() Alias
      * @return string
      */
-    public static function v6()
+    public static function v6(): string
     {
         return self::uuid6();
     }
@@ -329,7 +319,7 @@ class UUID
      * @see UUID::uuid7() Alias
      * @return string
      */
-    public static function v7()
+    public static function v7(): string
     {
         return self::uuid7();
     }
