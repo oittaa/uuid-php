@@ -184,10 +184,10 @@ final class UuidTest extends TestCase
     public function testGetTimeValid()
     {
         $now = microtime(true);
-        $uuid6_time = UUID::getTime(UUID::uuid6());
-        $uuid7_time = UUID::getTime(UUID::uuid7());
-        $this->assertEqualsWithDelta($now, $uuid6_time, 0.0001);
-        $this->assertEqualsWithDelta($now, $uuid7_time, 0.0001);
+        $uuid6 = UUID::uuid6();
+        $uuid7 = UUID::uuid7();
+        $this->assertEqualsWithDelta($now, UUID::getTime($uuid6), 0.001);
+        $this->assertEqualsWithDelta($now, UUID::getTime($uuid7), 0.001);
     }
 
     public function testGetTimeNull()
