@@ -208,12 +208,12 @@ class UUID
     public static function uuid7(): string
     {
         [$unixts, $subsec] = self::getUnixTime();
-        $uhex = str_pad(dechex($unixts), 9, '0', \STR_PAD_LEFT);
+        $uhex = substr(str_pad(dechex($unixts), 9, '0', \STR_PAD_LEFT), -9);
         $shex = str_pad(dechex($subsec), 6, '0', \STR_PAD_LEFT);
         $uhex .= sprintf(
             '%03s7%03s',
             substr($shex, 0, 3),
-            substr($shex, -3)
+            substr($shex, 3, 3)
         );
         $uhex .= bin2hex(random_bytes(8));
         return self::uuidFromHex($uhex, 7);
@@ -240,6 +240,29 @@ class UUID
     public static function equals(string $uuid1, string $uuid2): bool
     {
         return self::getBytes($uuid1) === self::getBytes($uuid2);
+    }
+
+    /**
+     * Returns Unix time from a UUID.
+     *
+     * @param string $uuid The UUID string
+     * @return string Unix time
+     */
+    public static function getTime(string $uuid): ?string
+    {
+        $uuid = self::stripExtras($uuid);
+        $version = self::getVersion($uuid);
+        $timehex = '0' . substr($uuid, 0, 12) . substr($uuid, 13, 3);
+        $retval = null;
+        if ($version === 6) {
+            $retval = substr_replace(strval(hexdec($timehex) - self::TIME_OFFSET_INT), '.', -7 ,0);
+
+        } elseif ($version === 7) {
+            $unixts = hexdec(substr($timehex, 0, 10));
+            $subsec = str_pad(strval(hexdec(substr($timehex, 10))), 7, '0', \STR_PAD_LEFT);
+            $retval = $unixts . '.' . $subsec;
+        }
+        return $retval;
     }
 
     /**
