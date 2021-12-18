@@ -61,13 +61,17 @@ class UUID
     private const REPLACE_ARR = array('urn:', 'uuid:', '-', '{', '}');
 
     /** @internal */
+    private const UUID_REGEX = '/^(?:urn:)?(?:uuid:)?(\{)?[0-9a-f]{8}\-?[0-9a-f]{4}'
+    . '\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{12}(?(1)\}|)$/i';
+
+    /** @internal */
     private static $unixts = 0;
 
     /** @internal */
     private static $subsec = 0;
 
     /** @internal */
-    private static function getUnixTime()
+    private static function getUnixTime(): array
     {
         $timestamp = microtime(false);
         $unixts = intval(substr($timestamp, 11), 10);
@@ -88,7 +92,7 @@ class UUID
     }
 
     /** @internal */
-    private static function stripExtras($uuid)
+    private static function stripExtras(string $uuid): string
     {
         if (!self::isValid($uuid)) {
             throw new \InvalidArgumentException('Invalid UUID string: ' . $uuid);
@@ -98,7 +102,7 @@ class UUID
     }
 
     /** @internal */
-    private static function getBytes($uuid)
+    private static function getBytes(string $uuid): string
     {
         $uhex = self::stripExtras($uuid);
 
@@ -113,7 +117,7 @@ class UUID
     }
 
     /** @internal */
-    private static function uuidFromHex($uhex, $version)
+    private static function uuidFromHex(string $uhex, int $version): string
     {
         return sprintf(
             '%08s-%04s-%04x-%04x-%12s',
@@ -223,8 +227,7 @@ class UUID
      */
     public static function isValid(string $uuid): bool
     {
-        return preg_match('/^(urn:)?(uuid:)?(\{)?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}'
-        . '\-?[0-9a-f]{4}\-?[0-9a-f]{12}(?(3)\}|)$/i', $uuid) === 1;
+        return preg_match(self::UUID_REGEX, $uuid) === 1;
     }
 
     /**
@@ -247,8 +250,7 @@ class UUID
      */
     public static function getVersion(string $uuid): int
     {
-        $bytes = unpack('n*', self::getBytes($uuid));
-        return (int) $bytes[4] >> 12;
+        return intval(self::stripExtras($uuid)[12], 16);
     }
 
     /**
