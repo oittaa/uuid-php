@@ -116,4 +116,8 @@ $uuid6_time = UUID::getTime(UUID::uuid6());
 var_dump($uuid6_time); // e.g. string(18) "1639860190.2801270"
 $uuid7_time = UUID::getTime(UUID::uuid7());
 var_dump($uuid7_time); // e.g. string(18) "1639860190.2801320"
+
+// Extract the UUID version.
+$uuid_version = UUID::getVersion('2140a926-4a47-465c-b622-4571ad9bb378');
+var_dump($uuid_version); // int(4)
 ```
