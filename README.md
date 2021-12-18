@@ -110,4 +110,10 @@ $cmp3 = UUID::cmp(
     '{C4A760A8-DBCF-5254-A0D9-6A4474BD1B62}'
 );
 var_dump($cmp3 === 0); // bool(true)
+
+// Extract Unix time from versions 6 and 7 as a string.
+$uuid6_time = UUID::getTime(UUID::uuid6());
+var_dump($uuid6_time); // e.g. string(18) "1639860190.2801270"
+$uuid7_time = UUID::getTime(UUID::uuid7());
+var_dump($uuid7_time); // e.g. string(18) "1639860190.2801320"
 ```
