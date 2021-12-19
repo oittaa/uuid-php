@@ -98,7 +98,7 @@ class UUID
             throw new \InvalidArgumentException('Invalid UUID string: ' . $uuid);
         }
         // Get hexadecimal components of UUID
-        return str_replace(self::REPLACE_ARR, '', $uuid);
+        return strtolower(str_replace(self::REPLACE_ARR, '', $uuid));
     }
 
     /** @internal */
@@ -239,7 +239,7 @@ class UUID
      */
     public static function equals(string $uuid1, string $uuid2): bool
     {
-        return self::getBytes($uuid1) === self::getBytes($uuid2);
+        return self::stripExtras($uuid1) === self::stripExtras($uuid2);
     }
 
     /**
@@ -285,7 +285,7 @@ class UUID
      */
     public static function cmp(string $uuid1, string $uuid2): int
     {
-        return strcmp(self::getBytes($uuid1), self::getBytes($uuid2));
+        return strcmp(self::stripExtras($uuid1), self::stripExtras($uuid2));
     }
 
     /**
@@ -296,7 +296,7 @@ class UUID
      */
     public static function toString(string $uuid): string
     {
-        $uhex = strtolower(self::stripExtras($uuid));
+        $uhex = self::stripExtras($uuid);
         return sprintf(
             '%08s-%04s-%04s-%04s-%12s',
             substr($uhex, 0, 8),
