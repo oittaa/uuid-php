@@ -186,12 +186,8 @@ class UUID
     {
         [$unixts, $subsec] = self::getUnixTime();
         $timestamp = $unixts * 10 ** 7 + $subsec;
-        $timehex = str_pad(dechex($timestamp + self::TIME_OFFSET_INT), 16, '0', \STR_PAD_LEFT);
-        $uhex = sprintf(
-            '%012s6%03s',
-            substr($timehex, -15, 12),
-            substr($timehex, -3)
-        );
+        $timehex = str_pad(dechex($timestamp + self::TIME_OFFSET_INT), 15, '0', \STR_PAD_LEFT);
+        $uhex = substr_replace(substr($timehex, -15), '6', -3, 0);
         $uhex .= bin2hex(random_bytes(8));
         return self::uuidFromHex($uhex, 6);
     }
@@ -206,12 +202,7 @@ class UUID
     {
         [$unixts, $subsec] = self::getUnixTime();
         $uhex = substr(str_pad(dechex($unixts), 9, '0', \STR_PAD_LEFT), -9);
-        $shex = str_pad(dechex($subsec), 6, '0', \STR_PAD_LEFT);
-        $uhex .= sprintf(
-            '%03s7%03s',
-            substr($shex, 0, 3),
-            substr($shex, 3, 3)
-        );
+        $uhex .= substr_replace(str_pad(dechex($subsec), 6, '0', \STR_PAD_LEFT), '7', -3, 0);
         $uhex .= bin2hex(random_bytes(8));
         return self::uuidFromHex($uhex, 7);
     }
