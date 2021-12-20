@@ -99,6 +99,12 @@ final class UuidTest extends TestCase
         $this->assertTrue(
             UUID::isValid('11a38b9a-b3da-360f-9353-a5a725514269')
         );
+        $this->assertFalse(
+            UUID::isValid('11a38b9a-b3da-360f-9353-a5a72551426')
+        );
+        $this->assertFalse(
+            UUID::isValid('11a38b9a-b3da-360f-9353-a5a7255142690')
+        );
         $this->assertTrue(
             UUID::isValid('urn:uuid:c4a760a8-dbcf-5254-a0d9-6a4474bd1b62')
         );
@@ -179,6 +185,14 @@ final class UuidTest extends TestCase
             7,
             UUID::getVersion(UUID::v7())
         );
+    }
+
+    public function testKnownGetTime()
+    {
+        $uuid6_time = UUID::getTime('1ebacf4f-a4a8-68ee-b4ec-618c14d005d5');
+        $this->assertSame($uuid6_time, '1620145373.6118510');
+        $uuid7_time = UUID::getTime('061a3d43-61d0-7cf4-bfce-753dadab55e1');
+        $this->assertSame($uuid7_time, '1638126646.1903860');
     }
 
     public function testGetTimeValid()
