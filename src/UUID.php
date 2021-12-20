@@ -58,11 +58,8 @@ class UUID
     public const TIME_OFFSET_INT = 0x01b21dd213814000;
 
     /** @internal */
-    private const REPLACE_ARR = array('urn:', 'uuid:', '-', '{', '}');
-
-    /** @internal */
-    private const UUID_REGEX = '/^(?:urn:)?(?:uuid:)?(\{)?[0-9a-f]{8}\-?[0-9a-f]{4}'
-    . '\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{12}(?(1)\}|)$/i';
+    private const UUID_REGEX = '/^(?:urn:)?(?:uuid:)?(\{)?([0-9a-f]{8})\-?([0-9a-f]{4})'
+    . '\-?([0-9a-f]{4})\-?([0-9a-f]{4})\-?([0-9a-f]{12})(?(1)\}|)$/i';
 
     /** @internal */
     private static $unixts = 0;
@@ -94,11 +91,11 @@ class UUID
     /** @internal */
     private static function stripExtras(string $uuid): string
     {
-        if (!self::isValid($uuid)) {
+        if (preg_match(self::UUID_REGEX, $uuid, $m) !== 1) {
             throw new \InvalidArgumentException('Invalid UUID string: ' . $uuid);
         }
         // Get hexadecimal components of UUID
-        return strtolower(str_replace(self::REPLACE_ARR, '', $uuid));
+        return strtolower($m[2] . $m[3] . $m[4] . $m[5] . $m[6]);
     }
 
     /** @internal */
