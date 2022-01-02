@@ -134,6 +134,18 @@ class UUID
         );
     }
 
+    /** @internal */
+    private static function encodeSubsec(int $value): int
+    {
+        return intdiv($value * 2 ** 24, 10 ** 7);
+    }
+
+    /** @internal */
+    private static function decodeSubsec(int $value): int
+    {
+        return (int) ceil($value * 10 ** 7 / 2 ** 24);
+    }
+
     /**
      * Generate a version 3 UUID based on the MD5 hash of a namespace identifier
      * (which is a UUID) and a name (which is a string).
@@ -201,6 +213,7 @@ class UUID
     public static function uuid7(): string
     {
         [$unixts, $subsec] = self::getUnixTime();
+        $subsec = self::encodeSubsec($subsec);
         $uhex = substr(str_pad(dechex($unixts), 9, '0', \STR_PAD_LEFT), -9);
         $uhex .= substr_replace(str_pad(dechex($subsec), 6, '0', \STR_PAD_LEFT), '7', -3, 0);
         $uhex .= bin2hex(random_bytes(8));
@@ -246,7 +259,7 @@ class UUID
             $retval = substr_replace(strval(hexdec($timehex) - self::TIME_OFFSET_INT), '.', -7, 0);
         } elseif ($version === 7) {
             $unixts = hexdec(substr($timehex, 0, 10));
-            $subsec = str_pad(strval(hexdec(substr($timehex, 10))), 7, '0', \STR_PAD_LEFT);
+            $subsec = str_pad(strval(self::decodeSubsec(hexdec(substr($timehex, 10)))), 7, '0', \STR_PAD_LEFT);
             $retval = $unixts . '.' . $subsec;
         }
         return $retval;
