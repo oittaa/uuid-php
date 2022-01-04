@@ -3,13 +3,13 @@
 
 # uuid-php
 
-A small PHP class for generating [RFC 4122](http://tools.ietf.org/html/rfc4122) version 3, 4, and 5 universally unique identifiers (UUID). Additionally supports [draft](https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-02) versions 6 and 7.
+A small PHP class for generating [RFC 4122][RFC 4122] version 3, 4, and 5 universally unique identifiers (UUID). Additionally supports [draft][draft 02] versions 6 and 7.
 
 If all you want is a unique ID, you should call `uuid4()`.
 
 ## Minimal UUID v4 implementation
 
-Credits go to [this answer](https://stackoverflow.com/a/15875555) on Stackoverflow for this minimal RFC 4122 compliant solution.
+Credits go to [this answer][stackoverflow uuid4] on Stackoverflow for this minimal RFC 4122 compliant solution.
 ```php
 <?php
 function uuid4()
@@ -121,3 +121,34 @@ var_dump($uuid7_time); // string(18) "1641082315.9141510"
 $uuid_version = UUID::getVersion('2140a926-4a47-465c-b622-4571ad9bb378');
 var_dump($uuid_version); // int(4)
 ```
+
+## UUIDv7 Field and Bit Layout
+
+```
+        0                   1                   2                   3
+        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       |                            unixts                             |
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       |unixts |       subsec_a        |  ver  |       subsec_b        |
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       |var|                         rand                              |
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       |                             rand                              |
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
+- `unixts`: 36 bit big-endian unsigned Unix Timestamp value
+- `subsec_a`: 12 bits allocated to sub-second precision values
+- `ver`: The 4 bit UUIDv7 version (0111)
+- `subsec_b`: 12 bits allocated to sub-second precision values
+- `var`: 2 bit UUID variant (10)
+- `rand`: The remaining 62 bits are filled with pseudo-random data
+
+24 bits dedicated to sub-second precision provide 100 nanosecond resolution. The `unixts` and `subsec` fields guarantee the order of UUIDs generated within the same timestamp by monotonically incrementing the timer.
+
+This implementation does not include a clock sequence counter as defined in the draft RFC.
+
+[RFC 4122]: http://tools.ietf.org/html/rfc4122
+[draft 02]: https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-02
+[stackoverflow uuid4]: https://stackoverflow.com/a/15875555
