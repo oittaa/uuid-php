@@ -216,7 +216,10 @@ class UUID
         $subsec = self::encodeSubsec($subsec);
         $uhex = substr(str_pad(dechex($unixts), 9, '0', \STR_PAD_LEFT), -9);
         $uhex .= substr_replace(str_pad(dechex($subsec), 6, '0', \STR_PAD_LEFT), '7', -3, 0);
-        $uhex .= bin2hex(random_bytes(8));
+        do {
+            $node = random_bytes(8);
+        } while ($node === str_repeat(chr(0), 8));
+        $uhex .= bin2hex($node);
         return self::uuidFromHex($uhex, 7);
     }
 
