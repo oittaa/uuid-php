@@ -7,8 +7,9 @@ namespace UUID;
 /**
  * Represents a universally unique identifier (UUID), according to RFC 4122.
  *
- * This class provides the static methods `uuid3()`, `uuid4()`, `uuid5()`, and
- * `uuid6()` for generating version 3, 4, 5, and 6 (draft) UUIDs.
+ * This class provides the static methods `uuid3()`, `uuid4()`, `uuid5()`,
+ * `uuid6()`, and `uuid7()` for generating version 3, 4, 5, 6 (draft), and
+ * 7 (draft) UUIDs.
  *
  * If all you want is a unique ID, you should call `uuid4()`.
  *
@@ -301,14 +302,7 @@ class UUID
     public static function toString(string $uuid): string
     {
         $uhex = self::stripExtras($uuid);
-        return sprintf(
-            '%08s-%04s-%04s-%04s-%12s',
-            substr($uhex, 0, 8),
-            substr($uhex, 8, 4),
-            substr($uhex, 12, 4),
-            substr($uhex, 16, 4),
-            substr($uhex, 20, 12)
-        );
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split($uhex, 4));
     }
 
     /**
