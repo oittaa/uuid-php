@@ -260,7 +260,7 @@ class UUID
         $timehex = '0' . substr($uuid, 0, 12) . substr($uuid, 13, 3);
         $retval = null;
         if ($version === 6) {
-            $retval = substr_replace(strval(hexdec($timehex) - self::TIME_OFFSET_INT), '.', -7, 0);
+            $retval = substr_replace(str_pad(strval(hexdec($timehex) - self::TIME_OFFSET_INT), 8, '0', \STR_PAD_LEFT), '.', -7, 0);
         } elseif ($version === 7) {
             $unixts = hexdec(substr($timehex, 0, 10));
             $subsec = str_pad(strval(self::decodeSubsec(hexdec(substr($timehex, 10)))), 7, '0', \STR_PAD_LEFT);
