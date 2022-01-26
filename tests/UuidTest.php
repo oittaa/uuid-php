@@ -212,4 +212,10 @@ final class UuidTest extends TestCase
         $uuid4_time = UUID::getTime(UUID::uuid4());
         $this->assertNull($uuid4_time);
     }
+
+    public function testGetTimeNearEpoch()
+    {
+        $uuid6_time = UUID::getTime('1b21dd21-3814-6001-76fa-54fb559c5fcd');
+        $this->assertSame($uuid6_time, '0.0000001');
+    }
 }
