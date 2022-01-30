@@ -269,8 +269,8 @@ class UUID
             $retval .= substr_replace(str_pad(strval($ts), 8, '0', \STR_PAD_LEFT), '.', -7, 0);
         } elseif ($version === 7) {
             $unixts = hexdec(substr($timehex, 0, 10));
-            $subsec = str_pad(strval(self::decodeSubsec(hexdec(substr($timehex, 10)))), 7, '0', \STR_PAD_LEFT);
-            $retval = $unixts . '.' . $subsec;
+            $subsec = self::decodeSubsec(hexdec(substr($timehex, 10)));
+            $retval = substr_replace(str_pad(strval($unixts * 10 ** 7 + $subsec), 8, '0', \STR_PAD_LEFT), '.', -7, 0);
         }
         return $retval;
     }
