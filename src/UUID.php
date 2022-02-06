@@ -144,7 +144,7 @@ class UUID
     /** @internal */
     private static function decodeSubsec(int $value): int
     {
-        return (int) ceil($value * 10 ** 7 / 2 ** 24);
+        return -(-$value * 10 ** 7 >> 24);
     }
 
     /**
