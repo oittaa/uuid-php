@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace UUID;
 
+/* 24 bits are needed to represent values up to 10_000_000 */
+define('INT_1E7', 10_000_000);
+define('SUBSEC_BITS', 24);
+
 /**
  * Represents a universally unique identifier (UUID), according to RFC 4122.
  *
@@ -138,13 +142,13 @@ class UUID
     /** @internal */
     private static function encodeSubsec(int $value): int
     {
-        return intdiv($value * 2 ** 24, 10 ** 7);
+        return intdiv($value << SUBSEC_BITS, INT_1E7);
     }
 
     /** @internal */
     private static function decodeSubsec(int $value): int
     {
-        return -(-$value * 10 ** 7 >> 24);
+        return -(-$value * INT_1E7 >> SUBSEC_BITS);
     }
 
     /**
@@ -198,7 +202,7 @@ class UUID
     public static function uuid6(): string
     {
         [$unixts, $subsec] = self::getUnixTime();
-        $timestamp = $unixts * 10 ** 7 + $subsec;
+        $timestamp = $unixts * INT_1E7 + $subsec;
         $timehex = str_pad(dechex($timestamp + self::TIME_OFFSET_INT), 15, '0', \STR_PAD_LEFT);
         $uhex = substr_replace(substr($timehex, -15), '6', -3, 0);
         $uhex .= bin2hex(random_bytes(8));
@@ -267,7 +271,7 @@ class UUID
         } elseif ($version === 7) {
             $unixts = hexdec(substr($timehex, 0, 10));
             $subsec = self::decodeSubsec(hexdec(substr($timehex, 10)));
-            $retval = substr_replace(str_pad(strval($unixts * 10 ** 7 + $subsec), 8, '0', \STR_PAD_LEFT), '.', -7, 0);
+            $retval = substr_replace(str_pad(strval($unixts * INT_1E7 + $subsec), 8, '0', \STR_PAD_LEFT), '.', -7, 0);
         }
         return $retval;
     }
