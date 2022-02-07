@@ -8,8 +8,6 @@ use PHPUnit\Framework\TestCase;
 use UUID\UUID;
 
 /**
- * @covers \UUID\INT_1E7
- * @covers \UUID\SUBSEC_BITS
  * @covers \UUID\UUID
  */
 final class FutureTimeTest extends TestCase

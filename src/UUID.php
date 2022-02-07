@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace UUID;
 
-/* 24 bits are needed to represent values up to 10_000_000 */
-define('INT_1E7', 10_000_000);
-define('SUBSEC_BITS', 24);
-
 /**
  * Represents a universally unique identifier (UUID), according to RFC 4122.
  *
@@ -61,6 +57,12 @@ class UUID
      * @link https://tools.ietf.org/html/rfc4122#section-4.1.4
      */
     public const TIME_OFFSET_INT = 0x01b21dd213814000;
+
+    /** @internal */
+    private const INT_1E7 = 10_000_000;
+
+    /** @internal */
+    private const SUBSEC_BITS = 24;
 
     /** @internal */
     private const UUID_REGEX = '/^(?:urn:)?(?:uuid:)?(\{)?([0-9a-f]{8})\-?([0-9a-f]{4})'
@@ -142,13 +144,13 @@ class UUID
     /** @internal */
     private static function encodeSubsec(int $value): int
     {
-        return intdiv($value << SUBSEC_BITS, INT_1E7);
+        return intdiv($value << self::SUBSEC_BITS, self::INT_1E7);
     }
 
     /** @internal */
     private static function decodeSubsec(int $value): int
     {
-        return -(-$value * INT_1E7 >> SUBSEC_BITS);
+        return -(-$value * self::INT_1E7 >> self::SUBSEC_BITS);
     }
 
     /**
@@ -202,7 +204,7 @@ class UUID
     public static function uuid6(): string
     {
         [$unixts, $subsec] = self::getUnixTime();
-        $timestamp = $unixts * INT_1E7 + $subsec;
+        $timestamp = $unixts * self::INT_1E7 + $subsec;
         $timehex = str_pad(dechex($timestamp + self::TIME_OFFSET_INT), 15, '0', \STR_PAD_LEFT);
         $uhex = substr_replace(substr($timehex, -15), '6', -3, 0);
         $uhex .= bin2hex(random_bytes(8));
@@ -271,7 +273,8 @@ class UUID
         } elseif ($version === 7) {
             $unixts = hexdec(substr($timehex, 0, 10));
             $subsec = self::decodeSubsec(hexdec(substr($timehex, 10)));
-            $retval = substr_replace(str_pad(strval($unixts * INT_1E7 + $subsec), 8, '0', \STR_PAD_LEFT), '.', -7, 0);
+            $retval = strval($unixts * self::INT_1E7 + $subsec);
+            $retval = substr_replace(str_pad($retval, 8, '0', \STR_PAD_LEFT), '.', -7, 0);
         }
         return $retval;
     }
