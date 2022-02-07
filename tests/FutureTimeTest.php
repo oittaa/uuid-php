@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use UUID\UUID;
 
 /**
- * @covers \UUID\UUID
+ * @covers \UUID
  */
 final class FutureTimeTest extends TestCase
 {
