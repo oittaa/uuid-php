@@ -108,16 +108,7 @@ class UUID
     /** @internal */
     private static function getBytes(string $uuid): string
     {
-        $uhex = self::stripExtras($uuid);
-
-        // Binary Value
-        $ustr = '';
-
-        // Convert UUID to bits
-        for ($i = 0; $i < strlen($uhex); $i += 2) {
-            $ustr .= chr(hexdec($uhex[$i] . $uhex[$i + 1]));
-        }
-        return $ustr;
+        return pack('H*', self::stripExtras($uuid));
     }
 
     /** @internal */
