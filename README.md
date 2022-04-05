@@ -3,7 +3,7 @@
 
 # uuid-php
 
-A small PHP class for generating [RFC 4122][RFC 4122] version 3, 4, and 5 universally unique identifiers (UUID). Additionally supports [draft][draft 02] versions 6 and 7.
+A small PHP class for generating [RFC 4122][RFC 4122] version 3, 4, and 5 universally unique identifiers (UUID). Additionally supports [draft][draft 03] versions 6 and 7.
 
 If all you want is a unique ID, you should call `uuid4()`.
 
@@ -54,13 +54,13 @@ echo $uuid5 . "\n"; // c4a760a8-dbcf-5254-a0d9-6a4474bd1b62
 
 // Generate a version 6 (lexicographically sortable) UUID
 $uuid6_first = UUID::uuid6();
-echo $uuid6_first . "\n"; // e.g. 1ebacf4f-a4a8-68ee-b4ec-618c14d005d5
+echo $uuid6_first . "\n"; // e.g. 1ec9414c-232a-6b00-b3c8-9e6bdeced846
 $uuid6_second = UUID::uuid6();
 var_dump($uuid6_first < $uuid6_second); // bool(true)
 
 // Generate a version 7 (lexicographically sortable) UUID
 $uuid7_first = UUID::uuid7();
-echo $uuid7_first . "\n"; // e.g. 061d0edc-bea0-75cc-9892-f6295fd7d295
+echo $uuid7_first . "\n"; // e.g. 017f21cf-d130-7cc3-98c4-dc0c0c07398f
 $uuid7_second = UUID::uuid7();
 var_dump($uuid7_first < $uuid7_second); // bool(true)
 
@@ -112,10 +112,10 @@ $cmp3 = UUID::cmp(
 var_dump($cmp3 === 0); // bool(true)
 
 // Extract Unix time from versions 6 and 7 as a string.
-$uuid6_time = UUID::getTime('1ebacf4f-a4a8-68ee-b4ec-618c14d005d5');
-var_dump($uuid6_time); // string(18) "1620145373.6118510"
-$uuid7_time = UUID::getTime('061d0edc-bea0-75cc-9892-f6295fd7d295');
-var_dump($uuid7_time); // string(18) "1641082315.9141510"
+$uuid6_time = UUID::getTime('1ec9414c-232a-6b00-b3c8-9e6bdeced846');
+var_dump($uuid6_time); // string(18) "1645557742.0000000"
+$uuid7_time = UUID::getTime('017f21cf-d130-7cc3-98c4-dc0c0c07398f');
+var_dump($uuid7_time); // string(18) "1645539742.0001995"
 
 // Extract the UUID version.
 $uuid_version = UUID::getVersion('2140a926-4a47-465c-b622-4571ad9bb378');
@@ -127,28 +127,26 @@ var_dump($uuid_version); // int(4)
 ```
         0                   1                   2                   3
         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-       |                            unixts                             |
-       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-       |unixts |       subsec_a        |  ver  |       subsec_b        |
-       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-       |var|                         rand                              |
-       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-       |                             rand                              |
-       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |                           unix_ts_ms                          |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |          unix_ts_ms           |  ver  |       subsec          |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |var|sub|                     rand                              |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |                             rand                              |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
-- `unixts`: 36 bit big-endian unsigned Unix Timestamp value
-- `subsec_a`: 12 bits allocated to sub-second precision values
+- `unix_ts_ms`: 48 bit big-endian unsigned number of Unix epoch timestamp with millisecond level of precision
 - `ver`: The 4 bit UUIDv7 version (0111)
-- `subsec_b`: 12 bits allocated to sub-second precision values
+- `subsec`: 12 bits allocated to sub-second precision values
 - `var`: 2 bit UUID variant (10)
-- `rand`: The remaining 62 bits are filled with pseudo-random data
+- `sub`: 2 bits allocated to sub-second precision values
+- `rand`: The remaining 60 bits are filled with pseudo-random data
 
-24 bits dedicated to sub-second precision provide 100 nanosecond resolution. The `unixts` and `subsec` fields guarantee the order of UUIDs generated within the same timestamp by monotonically incrementing the timer.
-
-This implementation does not include a clock sequence counter as defined in the draft RFC.
+14 bits dedicated to sub-second precision provide 100 nanosecond resolution. The `unix_ts` and `subsec` fields guarantee the order of UUIDs generated within the same timestamp by monotonically incrementing the timer.
 
 [RFC 4122]: http://tools.ietf.org/html/rfc4122
-[draft 02]: https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-02
+[draft 03]: https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-03
 [stackoverflow uuid4]: https://stackoverflow.com/a/15875555
