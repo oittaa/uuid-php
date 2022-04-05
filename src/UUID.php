@@ -62,7 +62,7 @@ class UUID
     private const INT_1E7 = 10_000_000;
 
     /** @internal */
-    private const SUBSEC_BITS = 24;
+    private const SUBSEC_BITS = 14;
 
     /** @internal */
     private const UUID_REGEX = '/^(?:urn:)?(?:uuid:)?(\{)?([0-9a-f]{8})\-?([0-9a-f]{4})'
@@ -135,13 +135,13 @@ class UUID
     /** @internal */
     private static function encodeSubsec(int $value): int
     {
-        return intdiv($value << self::SUBSEC_BITS, self::INT_1E7);
+        return intdiv($value << self::SUBSEC_BITS, 10000);
     }
 
     /** @internal */
     private static function decodeSubsec(int $value): int
     {
-        return -(-$value * self::INT_1E7 >> self::SUBSEC_BITS);
+        return -(-$value * 10000 >> self::SUBSEC_BITS);
     }
 
     /**
@@ -211,10 +211,15 @@ class UUID
     public static function uuid7(): string
     {
         [$unixts, $subsec] = self::getUnixTime();
-        $subsec = self::encodeSubsec($subsec);
-        $uhex = substr(str_pad(dechex($unixts), 9, '0', \STR_PAD_LEFT), -9);
-        $uhex .= substr_replace(str_pad(dechex($subsec), 6, '0', \STR_PAD_LEFT), '7', -3, 0);
-        $uhex .= bin2hex(random_bytes(8));
+        $unixtsms = $unixts * 1000 + intdiv($subsec, 10000);
+        $subsec = self::encodeSubsec($subsec % 10000);
+        $subsecA = $subsec >> 2;
+        $subsecB = $subsec & 0x03;
+        $randB = random_bytes(8);
+        $randB[0] = chr(ord($randB[0]) & 0x0f | $subsecB << 4);
+        $uhex = substr(str_pad(dechex($unixtsms), 12, '0', \STR_PAD_LEFT), -12);
+        $uhex .= '7' . str_pad(dechex($subsecA), 3, '0', \STR_PAD_LEFT);
+        $uhex .= bin2hex($randB);
         return self::uuidFromHex($uhex, 7);
     }
 
@@ -262,9 +267,9 @@ class UUID
             }
             $retval .= substr_replace(str_pad(strval($ts), 8, '0', \STR_PAD_LEFT), '.', -7, 0);
         } elseif ($version === 7) {
-            $unixts = hexdec(substr($timehex, 0, 10));
-            $subsec = self::decodeSubsec(hexdec(substr($timehex, 10)));
-            $retval = strval($unixts * self::INT_1E7 + $subsec);
+            $unixts = hexdec(substr($timehex, 0, 13));
+            $subsec = self::decodeSubsec(hexdec(substr($timehex, 13)) + (hexdec(substr($uuid, 16, 1)) >> 4 & 0x03));
+            $retval = strval($unixts * 10000 + $subsec);
             $retval = substr_replace(str_pad($retval, 8, '0', \STR_PAD_LEFT), '.', -7, 0);
         }
         return $retval;

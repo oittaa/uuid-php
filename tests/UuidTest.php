@@ -189,10 +189,10 @@ final class UuidTest extends TestCase
 
     public function testKnownGetTime()
     {
-        $uuid6_time = UUID::getTime('1ebacf4f-a4a8-68ee-b4ec-618c14d005d5');
-        $this->assertSame($uuid6_time, '1620145373.6118510');
-        $uuid7_time = UUID::getTime('061d0edc-bea0-75cc-9892-f6295fd7d295');
-        $this->assertSame($uuid7_time, '1641082315.9141510');
+        $uuid6_time = UUID::getTime('1EC9414C-232A-6B00-B3C8-9E6BDECED846');
+        $this->assertSame('1645557742.0000000', $uuid6_time);
+        $uuid7_time = UUID::getTime('017F21CF-D130-7CC3-98C4-DC0C0C07398F');
+        $this->assertSame('1645539742.000', substr($uuid7_time, 0, -4));
     }
 
     public function testGetTimeValid()
@@ -216,28 +216,28 @@ final class UuidTest extends TestCase
     public function testGetTimeNearEpoch()
     {
         $uuid6_time = UUID::getTime('1b21dd21-3814-6001-b6fa-54fb559c5fcd');
-        $this->assertSame($uuid6_time, '0.0000001');
+        $this->assertSame('0.0000001', $uuid6_time);
     }
 
     public function testGetTimeNegativeNearEpoch()
     {
         $uuid6_time = UUID::getTime('1b21dd21-3813-6fff-b678-1556dde9b80e');
-        $this->assertSame($uuid6_time, '-0.0000001');
+        $this->assertSame('-0.0000001', $uuid6_time);
     }
 
     public function testGetTimeZero()
     {
         $uuid6_time = UUID::getTime('00000000-0000-6000-8000-000000000000');
-        $this->assertSame($uuid6_time, '-12219292800.0000000');
+        $this->assertSame('-12219292800.0000000', $uuid6_time);
         $uuid7_time = UUID::getTime('00000000-0000-7000-8000-000000000000');
-        $this->assertSame($uuid7_time, '0.0000000');
+        $this->assertSame('0.0000000', $uuid7_time);
     }
 
     public function testGetTimeMax()
     {
         $uuid6_time = UUID::getTime('ffffffff-ffff-6fff-bfff-ffffffffffff');
-        $this->assertSame($uuid6_time, '103072857660.6846975');
+        $this->assertSame('103072857660.6846975', $uuid6_time);
         $uuid7_time = UUID::getTime('ffffffff-ffff-7fff-bfff-ffffffffffff');
-        $this->assertSame($uuid7_time, '68719476736.0000000');
+        $this->assertSame('281474976710.6552500', $uuid7_time);
     }
 }
