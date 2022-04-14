@@ -45,6 +45,10 @@ final class FutureTimeTest extends TestCase
                 $uuid1,
                 $uuid2
             );
+            $this->assertLessThan(
+                0,
+                strcmp(UUID::getTime($uuid1), UUID::getTime($uuid2))
+            );
             $uuid1 = $uuid2;
         }
     }
@@ -57,6 +61,10 @@ final class FutureTimeTest extends TestCase
             $this->assertGreaterThan(
                 $uuid1,
                 $uuid2
+            );
+            $this->assertLessThan(
+                0,
+                strcmp(UUID::getTime($uuid1), UUID::getTime($uuid2))
             );
             $uuid1 = $uuid2;
         }

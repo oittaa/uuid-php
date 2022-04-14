@@ -58,10 +58,6 @@ final class UuidTest extends TestCase
                 $uuid1,
                 $uuid2
             );
-            $this->assertGreaterThan(
-                UUID::getTime($uuid1),
-                UUID::getTime($uuid2)
-            );
             $this->assertLessThan(
                 0,
                 UUID::cmp($uuid1, $uuid2)
@@ -82,10 +78,6 @@ final class UuidTest extends TestCase
             $this->assertGreaterThan(
                 $uuid1,
                 $uuid2
-            );
-            $this->assertGreaterThan(
-                UUID::getTime($uuid1),
-                UUID::getTime($uuid2)
             );
             $this->assertLessThan(
                 0,
