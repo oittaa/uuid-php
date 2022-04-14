@@ -271,7 +271,7 @@ class UUID
             $retval .= substr_replace(str_pad(strval($ts), 8, '0', \STR_PAD_LEFT), '.', -7, 0);
         } elseif ($version === 7) {
             $unixts = hexdec(substr($timehex, 0, 13));
-            $subsec = self::decodeSubsec(hexdec(substr($timehex, 13)) + (hexdec(substr($uuid, 16, 1)) >> 4 & 0x03));
+            $subsec = self::decodeSubsec((hexdec(substr($timehex, 13)) << 2) + (hexdec(substr($uuid, 16, 1)) & 0x03));
             $retval = strval($unixts * self::V7_SUBSEC_RANGE + $subsec);
             $retval = substr_replace(str_pad($retval, 8, '0', \STR_PAD_LEFT), '.', -7, 0);
         }
