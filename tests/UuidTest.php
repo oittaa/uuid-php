@@ -58,6 +58,10 @@ final class UuidTest extends TestCase
                 $uuid1,
                 $uuid2
             );
+            $this->assertGreaterThan(
+                UUID::getTime($uuid1),
+                UUID::getTime($uuid2)
+            );
             $this->assertLessThan(
                 0,
                 UUID::cmp($uuid1, $uuid2)
@@ -78,6 +82,10 @@ final class UuidTest extends TestCase
             $this->assertGreaterThan(
                 $uuid1,
                 $uuid2
+            );
+            $this->assertGreaterThan(
+                UUID::getTime($uuid1),
+                UUID::getTime($uuid2)
             );
             $this->assertLessThan(
                 0,
@@ -238,6 +246,6 @@ final class UuidTest extends TestCase
         $uuid6_time = UUID::getTime('ffffffff-ffff-6fff-bfff-ffffffffffff');
         $this->assertSame('103072857660.6846975', $uuid6_time);
         $uuid7_time = UUID::getTime('ffffffff-ffff-7fff-bfff-ffffffffffff');
-        $this->assertSame('281474976710.6552500', $uuid7_time);
+        $this->assertSame('281474976710.6560000', $uuid7_time);
     }
 }
