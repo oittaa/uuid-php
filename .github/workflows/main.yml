@@ -22,7 +22,7 @@ jobs:
         tools: cs2pr, phpcs
     - name: Run phpcs
       run: phpcs -q --report=checkstyle src/ tests/ | cs2pr
-  
+
   benchmark:
     runs-on: ubuntu-20.04
     strategy:
@@ -33,7 +33,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@2.18.1
       with:
-        php-version: ${{ matrix.php-versions }}   
+        php-version: ${{ matrix.php-versions }}
         tools: composer, phpbench/phpbench
         coverage: none
         ini-values: memory_limit=-1
@@ -53,10 +53,10 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@2.18.1
       with:
-        php-version: ${{ matrix.php-versions }}   
+        php-version: ${{ matrix.php-versions }}
         tools: composer, phpunit
     - name: Install dependencies
-      run: composer install
+      run: composer install --no-dev
     - name: PHPUnit
       run: phpunit --coverage-clover coverage.xml
     - name: Upload coverage to Codecov
