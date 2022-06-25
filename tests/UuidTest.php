@@ -191,8 +191,8 @@ final class UuidTest extends TestCase
     {
         $uuid6_time = UUID::getTime('1EC9414C-232A-6B00-B3C8-9E6BDECED846');
         $this->assertSame('1645557742.0000000', $uuid6_time);
-        $uuid7_time = UUID::getTime('017F21CF-D130-7CC3-98C4-DC0C0C07398F');
-        $this->assertSame('1645539742.000', substr($uuid7_time, 0, -4));
+        $uuid7_time = UUID::getTime('017F22E2-79B0-7CC3-98C4-DC0C0C07398F');
+        $this->assertSame('1645557742.000', substr($uuid7_time, 0, -4));
     }
 
     public function testGetTimeValid()
