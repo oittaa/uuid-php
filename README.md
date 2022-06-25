@@ -60,7 +60,7 @@ var_dump($uuid6_first < $uuid6_second); // bool(true)
 
 // Generate a version 7 (lexicographically sortable) UUID
 $uuid7_first = UUID::uuid7();
-echo $uuid7_first . "\n"; // e.g. 017f21cf-d130-7cc3-98c4-dc0c0c07398f
+echo $uuid7_first . "\n"; // e.g. 017f22e2-79b0-7cc3-98c4-dc0c0c07398f
 $uuid7_second = UUID::uuid7();
 var_dump($uuid7_first < $uuid7_second); // bool(true)
 
@@ -114,8 +114,8 @@ var_dump($cmp3 === 0); // bool(true)
 // Extract Unix time from versions 6 and 7 as a string.
 $uuid6_time = UUID::getTime('1ec9414c-232a-6b00-b3c8-9e6bdeced846');
 var_dump($uuid6_time); // string(18) "1645557742.0000000"
-$uuid7_time = UUID::getTime('017f21cf-d130-7cc3-98c4-dc0c0c07398f');
-var_dump($uuid7_time); // string(18) "1645539742.0001995"
+$uuid7_time = UUID::getTime('017f22e2-79b0-7cc3-98c4-dc0c0c07398f');
+var_dump($uuid7_time); // string(18) "1645557742.0007977"
 
 // Extract the UUID version.
 $uuid_version = UUID::getVersion('2140a926-4a47-465c-b622-4571ad9bb378');
