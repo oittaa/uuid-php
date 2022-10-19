@@ -81,9 +81,9 @@ class UUID
     private static function getUnixTime(): array
     {
         $timestamp = microtime(false);
-        $unixts = intval(substr($timestamp, 11), 10);
-        $subsec = intval(substr($timestamp, 2, 7), 10);
-        if (self::$unixts > $unixts || self::$unixts === $unixts && self::$subsec >= $subsec) {
+        $unixts = (int) substr($timestamp, 11);
+        $subsec = (int) substr($timestamp, 2, 7);
+        if (self::$unixts > $unixts || (self::$unixts === $unixts && self::$subsec >= $subsec)) {
             $unixts = self::$unixts;
             $subsec = self::$subsec;
             if ($subsec >= self::SUBSEC_RANGE - 1) {
@@ -268,11 +268,11 @@ class UUID
                 $retval = '-';
                 $ts = abs($ts);
             }
-            $retval .= substr_replace(str_pad(strval($ts), 8, '0', \STR_PAD_LEFT), '.', -7, 0);
+            $retval .= substr_replace(str_pad((string) $ts, 8, '0', \STR_PAD_LEFT), '.', -7, 0);
         } elseif ($version === 7) {
             $unixts = hexdec(substr($timehex, 0, 13));
             $subsec = self::decodeSubsec((hexdec(substr($timehex, 13)) << 2) + (hexdec(substr($uuid, 16, 1)) & 0x03));
-            $retval = strval($unixts * self::V7_SUBSEC_RANGE + $subsec);
+            $retval = (string) ($unixts * self::V7_SUBSEC_RANGE + $subsec);
             $retval = substr_replace(str_pad($retval, 8, '0', \STR_PAD_LEFT), '.', -7, 0);
         }
         return $retval;
