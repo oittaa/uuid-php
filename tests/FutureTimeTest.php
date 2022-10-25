@@ -24,7 +24,7 @@ final class FutureTimeTest extends TestCase
         $property->setValue($a, 9999990);
         $property = $reflection->getProperty('unixts_ms');
         $property->setAccessible(true);
-        $property->setValue($a, 9000000000000);
+        $property->setValue($a, 9000000000090);
     }
 
     protected function tearDown(): void
