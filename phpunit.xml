@@ -14,7 +14,8 @@
          verbose="true">
     <testsuites>
         <testsuite name="default">
-            <directory>tests</directory>
+            <file>tests/UuidTest.php</file>
+            <file>tests/FutureTimeTest.php</file>
         </testsuite>
     </testsuites>
 
