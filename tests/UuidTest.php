@@ -228,7 +228,6 @@ final class UuidTest extends TestCase
             $uuid6 = UUID::uuid6();
             $this->assertEqualsWithDelta(microtime(true), UUID::getTime($uuid6), 0.001);
             $uuid7 = UUID::uuid7();
-            echo $uuid7 . "\n";
             $this->assertEqualsWithDelta(microtime(true), UUID::getTime($uuid7), 0.01);
             $uuid8 = UUID::uuid8();
             $this->assertEqualsWithDelta(microtime(true), UUID::getTime($uuid8), 0.001);
