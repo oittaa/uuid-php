@@ -31,6 +31,10 @@ class UUIDGenerationBench
     {
         UUID::uuid7();
     }
+    public function benchUUID8Generation(): void
+    {
+        UUID::uuid8();
+    }
     public function benchUUIDToString(): void
     {
         UUID::toString('{C4A760A8-DBCF-5254-A0D9-6A4474BD1B62}');
