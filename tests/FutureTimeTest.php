@@ -22,6 +22,9 @@ final class FutureTimeTest extends TestCase
         $property = $reflection->getProperty('subsec');
         $property->setAccessible(true);
         $property->setValue($a, 9999990);
+        $property = $reflection->getProperty('unixts_ms');
+        $property->setAccessible(true);
+        $property->setValue($a, 9000000000090);
     }
 
     protected function tearDown(): void
@@ -32,6 +35,9 @@ final class FutureTimeTest extends TestCase
         $property->setAccessible(true);
         $property->setValue($a, 0);
         $property = $reflection->getProperty('subsec');
+        $property->setAccessible(true);
+        $property->setValue($a, 0);
+        $property = $reflection->getProperty('unixts_ms');
         $property->setAccessible(true);
         $property->setValue($a, 0);
     }
@@ -58,6 +64,23 @@ final class FutureTimeTest extends TestCase
         $uuid1 = UUID::uuid7();
         for ($x = 0; $x < 1000; $x++) {
             $uuid2 = UUID::uuid7();
+            $this->assertGreaterThan(
+                $uuid1,
+                $uuid2
+            );
+            $this->assertLessThan(
+                0,
+                strcmp(UUID::getTime($uuid1), UUID::getTime($uuid2))
+            );
+            $uuid1 = $uuid2;
+        }
+    }
+
+    public function testFutureTimeVersion8()
+    {
+        $uuid1 = UUID::uuid8();
+        for ($x = 0; $x < 1000; $x++) {
+            $uuid2 = UUID::uuid8();
             $this->assertGreaterThan(
                 $uuid1,
                 $uuid2

@@ -69,12 +69,33 @@ final class UuidTest extends TestCase
     public function testCanGenerateValidVersion7()
     {
         $uuid1 = UUID::uuid7();
-        for ($x = 0; $x < 1000; $x++) {
+        for ($x = 0; $x < 10; $x++) {
             $this->assertMatchesRegularExpression(
                 '/^[0-9a-f]{8}\-[0-9a-f]{4}\-7[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}$/',
                 $uuid1
             );
             $uuid2 = UUID::uuid7();
+            $this->assertGreaterThan(
+                $uuid1,
+                $uuid2
+            );
+            $this->assertLessThan(
+                0,
+                UUID::cmp($uuid1, $uuid2)
+            );
+            $uuid1 = $uuid2;
+        }
+    }
+
+    public function testCanGenerateValidVersion8()
+    {
+        $uuid1 = UUID::uuid8();
+        for ($x = 0; $x < 1000; $x++) {
+            $this->assertMatchesRegularExpression(
+                '/^[0-9a-f]{8}\-[0-9a-f]{4}\-8[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}$/',
+                $uuid1
+            );
+            $uuid2 = UUID::uuid8();
             $this->assertGreaterThan(
                 $uuid1,
                 $uuid2
@@ -185,6 +206,10 @@ final class UuidTest extends TestCase
             7,
             UUID::getVersion(UUID::v7())
         );
+        $this->assertSame(
+            8,
+            UUID::getVersion(UUID::v8())
+        );
     }
 
     public function testKnownGetTime()
@@ -192,17 +217,20 @@ final class UuidTest extends TestCase
         $uuid6_time = UUID::getTime('1EC9414C-232A-6B00-B3C8-9E6BDECED846');
         $this->assertSame('1645557742.0000000', $uuid6_time);
         $uuid7_time = UUID::getTime('017F22E2-79B0-7CC3-98C4-DC0C0C07398F');
-        $this->assertSame('1645557742.000', substr($uuid7_time, 0, -4));
+        $this->assertSame('1645557742.0000000', $uuid7_time);
+        $uuid8_time = UUID::getTime('017F22E2-79B0-8CC3-98C4-DC0C0C07398F');
+        $this->assertSame('1645557742.0007977', $uuid8_time);
     }
 
     public function testGetTimeValid()
     {
         for ($i = 1; $i <= 10; $i++) {
-            $now = microtime(true);
             $uuid6 = UUID::uuid6();
+            $this->assertEqualsWithDelta(microtime(true), UUID::getTime($uuid6), 0.001);
             $uuid7 = UUID::uuid7();
-            $this->assertEqualsWithDelta($now, UUID::getTime($uuid6), 0.001);
-            $this->assertEqualsWithDelta($now, UUID::getTime($uuid7), 0.001);
+            $this->assertEqualsWithDelta(microtime(true), UUID::getTime($uuid7), 0.01);
+            $uuid8 = UUID::uuid8();
+            $this->assertEqualsWithDelta(microtime(true), UUID::getTime($uuid8), 0.001);
             usleep(100000);
         }
     }
@@ -231,6 +259,8 @@ final class UuidTest extends TestCase
         $this->assertSame('-12219292800.0000000', $uuid6_time);
         $uuid7_time = UUID::getTime('00000000-0000-7000-8000-000000000000');
         $this->assertSame('0.0000000', $uuid7_time);
+        $uuid8_time = UUID::getTime('00000000-0000-8000-8000-000000000000');
+        $this->assertSame('0.0000000', $uuid8_time);
     }
 
     public function testGetTimeMax()
@@ -238,6 +268,8 @@ final class UuidTest extends TestCase
         $uuid6_time = UUID::getTime('ffffffff-ffff-6fff-bfff-ffffffffffff');
         $this->assertSame('103072857660.6846975', $uuid6_time);
         $uuid7_time = UUID::getTime('ffffffff-ffff-7fff-bfff-ffffffffffff');
-        $this->assertSame('281474976710.6560000', $uuid7_time);
+        $this->assertSame('281474976710.6550000', $uuid7_time);
+        $uuid8_time = UUID::getTime('ffffffff-ffff-8fff-bfff-ffffffffffff');
+        $this->assertSame('281474976710.6560000', $uuid8_time);
     }
 }

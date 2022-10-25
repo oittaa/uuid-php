@@ -3,9 +3,11 @@
 
 # uuid-php
 
-A small PHP class for generating [RFC 4122][RFC 4122] version 3, 4, and 5 universally unique identifiers (UUID). Additionally supports [draft][draft 04] versions 6 and 7.
+A small PHP class for generating [RFC 4122][RFC 4122] version 3, 4, and 5 universally unique identifiers (UUID). Additionally supports [draft][draft] versions 6, 7, and 8.
 
 If all you want is a unique ID, you should call `uuid4()`.
+
+> Implementations SHOULD utilize UUID version 7 over UUID version 1 and 6 if possible.
 
 ## Minimal UUID v4 implementation
 
@@ -25,7 +27,7 @@ echo uuid4();
 
 ## Installation
 
-If you need comparison tools or sortable identifiers like in versions 6 and 7, you might find this small and fast package useful. It doesn't require any other dependencies.
+If you need comparison tools or sortable identifiers like in versions 6, 7, and 8, you might find this small and fast package useful. It doesn't require any other dependencies.
 
 ```bash
 composer require oittaa/uuid
@@ -63,6 +65,12 @@ $uuid7_first = UUID::uuid7();
 echo $uuid7_first . "\n"; // e.g. 017f22e2-79b0-7cc3-98c4-dc0c0c07398f
 $uuid7_second = UUID::uuid7();
 var_dump($uuid7_first < $uuid7_second); // bool(true)
+
+// Generate a version 8 (lexicographically sortable) UUID
+$uuid8_first = UUID::uuid8();
+echo $uuid8_first . "\n"; // e.g. 017f22e2-79b0-8cc3-98c4-dc0c0c07398f
+$uuid8_second = UUID::uuid8();
+var_dump($uuid8_first < $uuid8_second); // bool(true)
 
 // Test if a given string is a valid UUID
 $isvalid = UUID::isValid('11a38b9a-b3da-360f-9353-a5a725514269');
@@ -111,18 +119,53 @@ $cmp3 = UUID::cmp(
 );
 var_dump($cmp3 === 0); // bool(true)
 
-// Extract Unix time from versions 6 and 7 as a string.
+// Extract Unix time from versions 6, 7, and 8 as a string.
 $uuid6_time = UUID::getTime('1ec9414c-232a-6b00-b3c8-9e6bdeced846');
 var_dump($uuid6_time); // string(18) "1645557742.0000000"
 $uuid7_time = UUID::getTime('017f22e2-79b0-7cc3-98c4-dc0c0c07398f');
-var_dump($uuid7_time); // string(18) "1645557742.0007977"
+var_dump($uuid7_time); // string(18) "1645557742.0000000"
+$uuid8_time = UUID::getTime('017f22e2-79b0-8cc3-98c4-dc0c0c07398f');
+var_dump($uuid8_time); // string(18) "1645557742.0007977"
 
 // Extract the UUID version.
 $uuid_version = UUID::getVersion('2140a926-4a47-465c-b622-4571ad9bb378');
 var_dump($uuid_version); // int(4)
 ```
 
+## UUIDv6 Field and Bit Layout
+
+```
+        0                   1                   2                   3
+        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |                           time_high                           |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |           time_mid            |      time_low_and_version     |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |clk_seq_hi_res |  clk_seq_low  |         node (0-1)            |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |                         node (2-5)                            |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
 ## UUIDv7 Field and Bit Layout
+
+```
+
+        0                   1                   2                   3
+        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |                           unix_ts_ms                          |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |          unix_ts_ms           |  ver  |       rand_a          |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |var|                        rand_b                             |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |                            rand_b                             |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
+## UUIDv8 Field and Bit Layout
 
 ```
         0                   1                   2                   3
@@ -139,14 +182,14 @@ var_dump($uuid_version); // int(4)
 ```
 
 - `unix_ts_ms`: 48 bit big-endian unsigned number of Unix epoch timestamp with millisecond level of precision
-- `ver`: The 4 bit UUIDv7 version (0111)
+- `ver`: The 4 bit UUIDv8 version (1000)
 - `subsec`: 12 bits allocated to sub-second precision values
 - `var`: 2 bit UUID variant (10)
 - `sub`: 2 bits allocated to sub-second precision values
 - `rand`: The remaining 60 bits are filled with pseudo-random data
 
-14 bits dedicated to sub-second precision provide 100 nanosecond resolution. The `unix_ts` and `subsec` fields guarantee the order of UUIDs generated within the same timestamp by monotonically incrementing the timer.
+14 bits dedicated to sub-second precision provide 100 nanosecond resolution. The `unix_ts_ms` and `subsec` fields guarantee the order of UUIDs generated within the same timestamp by monotonically incrementing the timer.
 
 [RFC 4122]: http://tools.ietf.org/html/rfc4122
-[draft 04]: https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-04
+[draft]: https://github.com/ietf-wg-uuidrev/rfc4122bis
 [stackoverflow uuid4]: https://stackoverflow.com/a/15875555

@@ -8,13 +8,13 @@ namespace UUID;
  * Represents a universally unique identifier (UUID), according to RFC 4122.
  *
  * This class provides the static methods `uuid3()`, `uuid4()`, `uuid5()`,
- * `uuid6()`, and `uuid7()` for generating version 3, 4, 5, 6 (draft), and
- * 7 (draft) UUIDs.
+ * `uuid6()`, `uuid7()`, and `uuid8()` for generating version 3, 4, 5,
+ * 6 (draft), 7 (draft), and 8 (draft) UUIDs.
  *
  * If all you want is a unique ID, you should call `uuid4()`.
  *
  * @link http://tools.ietf.org/html/rfc4122
- * @link https://github.com/uuid6/uuid6-ietf-draft
+ * @link https://github.com/ietf-wg-uuidrev/rfc4122bis
  * @link http://en.wikipedia.org/wiki/Universally_unique_identifier
  */
 class UUID
@@ -49,6 +49,12 @@ class UUID
      * @link http://tools.ietf.org/html/rfc4122#section-4.1.7
      */
     public const NIL = '00000000-0000-0000-0000-000000000000';
+    /**
+     * The Max UUID is special form of UUID that is specified to have all 128 bits set to one.
+     * @var string
+     * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#name-max-uuid
+     */
+    public const MAX = 'FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF';
 
     /**
      * 0x01b21dd213814000 is the number of 100-ns intervals between the
@@ -65,7 +71,10 @@ class UUID
     private const V7_SUBSEC_RANGE = 10_000;
 
     /** @internal */
-    private const V7_SUBSEC_BITS = 14;
+    private const V8_SUBSEC_RANGE = 10_000;
+
+    /** @internal */
+    private const V8_SUBSEC_BITS = 14;
 
     /** @internal */
     private const UUID_REGEX = '/^(?:urn:)?(?:uuid:)?(\{)?([0-9a-f]{8})\-?([0-9a-f]{4})'
@@ -78,7 +87,10 @@ class UUID
     private static $subsec = 0;
 
     /** @internal */
-    private static function getUnixTime(): array
+    private static $unixts_ms = 0;
+
+    /** @internal */
+    private static function getUnixTimeSubsec(): array
     {
         $timestamp = microtime(false);
         $unixts = intval(substr($timestamp, 11), 10);
@@ -96,6 +108,19 @@ class UUID
         self::$unixts = $unixts;
         self::$subsec = $subsec;
         return [$unixts, $subsec];
+    }
+
+    /** @internal */
+    private static function getUnixTimeMs(): int
+    {
+        $timestamp = microtime(false);
+        $unixts = intval(substr($timestamp, 11), 10);
+        $unixts_ms = $unixts * 1000 + intval(substr($timestamp, 2, 3), 10);
+        if (self::$unixts_ms >= $unixts_ms) {
+            $unixts_ms = self::$unixts_ms + 1;
+        }
+        self::$unixts_ms = $unixts_ms;
+        return $unixts_ms;
     }
 
     /** @internal */
@@ -138,13 +163,13 @@ class UUID
     /** @internal */
     private static function encodeSubsec(int $value): int
     {
-        return intdiv($value << self::V7_SUBSEC_BITS, self::V7_SUBSEC_RANGE);
+        return intdiv($value << self::V8_SUBSEC_BITS, self::V8_SUBSEC_RANGE);
     }
 
     /** @internal */
     private static function decodeSubsec(int $value): int
     {
-        return -(-$value * self::V7_SUBSEC_RANGE >> self::V7_SUBSEC_BITS);
+        return -(-$value * self::V8_SUBSEC_RANGE >> self::V8_SUBSEC_BITS);
     }
 
     /**
@@ -189,15 +214,16 @@ class UUID
     }
 
     /**
-     * Generate a version 6 UUID. A v6 UUID is lexicographically sortable and contains
-     * a 60-bit timestamp and 62 extra unique bits. Unlike version 1 UUID, this
-     * implementation of version 6 UUID doesn't leak the MAC address of the host.
+     * UUID version 6 is a field-compatible version of UUIDv1, reordered for improved
+     * DB locality. It is expected that UUIDv6 will primarily be used in contexts
+     * where there are existing v1 UUIDs. Systems that do not involve legacy UUIDv1
+     * SHOULD consider using UUIDv7 instead.
      *
      * @return string The string standard representation of the UUID
      */
     public static function uuid6(): string
     {
-        [$unixts, $subsec] = self::getUnixTime();
+        [$unixts, $subsec] = self::getUnixTimeSubsec();
         $timestamp = $unixts * self::SUBSEC_RANGE + $subsec;
         $timehex = str_pad(dechex($timestamp + self::TIME_OFFSET_INT), 15, '0', \STR_PAD_LEFT);
         $uhex = substr_replace(substr($timehex, -15), '6', -3, 0);
@@ -206,24 +232,43 @@ class UUID
     }
 
     /**
-     * Generate a version 7 UUID. A v7 UUID is lexicographically sortable and is
-     * designed to encode a Unix timestamp with arbitrary sub-second precision.
+     * UUID version 7 features a time-ordered value field derived from the widely
+     * implemented and well known Unix Epoch timestamp source, the number of
+     * milliseconds seconds since midnight 1 Jan 1970 UTC, leap seconds excluded. As
+     * well as improved entropy characteristics over versions 1 or 6.
+     *
+     * Implementations SHOULD utilize UUID version 7 over UUID version 1 and 6 if
+     * possible.
      *
      * @return string The string standard representation of the UUID
      */
     public static function uuid7(): string
     {
-        [$unixts, $subsec] = self::getUnixTime();
-        $unixtsms = $unixts * 1000 + intdiv($subsec, self::V7_SUBSEC_RANGE);
-        $subsec = self::encodeSubsec($subsec % self::V7_SUBSEC_RANGE);
+        $unixtsms = self::getUnixTimeMs();
+        $uhex = substr(str_pad(dechex($unixtsms), 12, '0', \STR_PAD_LEFT), -12);
+        $uhex .= bin2hex(random_bytes(10));
+        return self::uuidFromHex($uhex, 7);
+    }
+
+    /**
+     * Generate a version 8 UUID. A v8 UUID is lexicographically sortable and is
+     * designed to encode a Unix timestamp with arbitrary sub-second precision.
+     *
+     * @return string The string standard representation of the UUID
+     */
+    public static function uuid8(): string
+    {
+        [$unixts, $subsec] = self::getUnixTimeSubsec();
+        $unixtsms = $unixts * 1000 + intdiv($subsec, self::V8_SUBSEC_RANGE);
+        $subsec = self::encodeSubsec($subsec % self::V8_SUBSEC_RANGE);
         $subsecA = $subsec >> 2;
         $subsecB = $subsec & 0x03;
         $randB = random_bytes(8);
         $randB[0] = chr(ord($randB[0]) & 0x0f | $subsecB << 4);
         $uhex = substr(str_pad(dechex($unixtsms), 12, '0', \STR_PAD_LEFT), -12);
-        $uhex .= '7' . str_pad(dechex($subsecA), 3, '0', \STR_PAD_LEFT);
+        $uhex .= '8' . str_pad(dechex($subsecA), 3, '0', \STR_PAD_LEFT);
         $uhex .= bin2hex($randB);
-        return self::uuidFromHex($uhex, 7);
+        return self::uuidFromHex($uhex, 8);
     }
 
     /**
@@ -271,8 +316,12 @@ class UUID
             $retval .= substr_replace(str_pad(strval($ts), 8, '0', \STR_PAD_LEFT), '.', -7, 0);
         } elseif ($version === 7) {
             $unixts = hexdec(substr($timehex, 0, 13));
+            $retval = strval($unixts * self::V7_SUBSEC_RANGE);
+            $retval = substr_replace(str_pad($retval, 8, '0', \STR_PAD_LEFT), '.', -7, 0);
+        } elseif ($version === 8) {
+            $unixts = hexdec(substr($timehex, 0, 13));
             $subsec = self::decodeSubsec((hexdec(substr($timehex, 13)) << 2) + (hexdec(substr($uuid, 16, 1)) & 0x03));
-            $retval = strval($unixts * self::V7_SUBSEC_RANGE + $subsec);
+            $retval = strval($unixts * self::V8_SUBSEC_RANGE + $subsec);
             $retval = substr_replace(str_pad($retval, 8, '0', \STR_PAD_LEFT), '.', -7, 0);
         }
         return $retval;
@@ -353,5 +402,13 @@ class UUID
     public static function v7(): string
     {
         return self::uuid7();
+    }
+    /**
+     * @see UUID::uuid8() Alias
+     * @return string
+     */
+    public static function v8(): string
+    {
+        return self::uuid8();
     }
 }
