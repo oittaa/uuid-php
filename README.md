@@ -37,6 +37,8 @@ composer require oittaa/uuid
 
 ## Usage
 
+### How to generate
+
 ```php
 <?php
 
@@ -45,6 +47,7 @@ require 'vendor/autoload.php';
 use UUID\UUID;
 
 // Generate a version 3 (name-based and hashed with MD5) UUID
+// Namespaces: NAMESPACE_DNS, NAMESPACE_URL, NAMESPACE_OID, NAMESPACE_X500
 $uuid3 = UUID::uuid3(UUID::NAMESPACE_DNS, 'php.net');
 echo $uuid3 . "\n"; // 11a38b9a-b3da-360f-9353-a5a725514269
 
@@ -73,6 +76,16 @@ $uuid8_first = UUID::uuid8();
 echo $uuid8_first . "\n"; // e.g. 017f22e2-79b0-8cc3-98c4-dc0c0c07398f
 $uuid8_second = UUID::uuid8();
 var_dump($uuid8_first < $uuid8_second); // bool(true)
+```
+
+### Tools
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+use UUID\UUID;
 
 // Test if a given string is a valid UUID
 $isvalid = UUID::isValid('11a38b9a-b3da-360f-9353-a5a725514269');
