@@ -7,7 +7,9 @@ A small PHP class for generating [RFC 4122][RFC 4122] version 3, 4, and 5 univer
 
 If all you want is a unique ID, you should call `uuid4()`.
 
-> Implementations SHOULD utilize UUID version 7 over UUID version 1 and 6 if possible.
+> Implementations SHOULD utilize UUID version 7 instead of UUID version 1 and 6 if possible.
+
+If you're regularly generating more than thousand UUIDs per second, you might want to use `uuid8()` instead of `uuid7()`. This implementation of `uuid8()` sacrifices some entrpopy bytes of `uuid7()` to offer 100 nanosecond granularity while being otherwise compatible.
 
 ## Minimal UUID v4 implementation
 
