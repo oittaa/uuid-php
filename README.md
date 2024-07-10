@@ -3,7 +3,7 @@
 
 # uuid-php
 
-A small PHP class for generating [RFC 4122][RFC 4122] version 3, 4, and 5 universally unique identifiers (UUID). Additionally supports [draft][draft] versions 6, 7, and 8.
+A small PHP class for generating [RFC 9562][RFC 9562] universally unique identifiers (UUID) from version 3 to version 8.
 
 If all you want is a unique ID, you should call `uuid4()`.
 
@@ -13,7 +13,7 @@ If you're regularly generating more than thousand UUIDs per second, you might wa
 
 ## Minimal UUID v4 implementation
 
-Credits go to [this answer][stackoverflow uuid4] on Stackoverflow for this minimal RFC 4122 compliant solution.
+Credits go to [this answer][stackoverflow uuid4] on Stackoverflow for this minimal RFC 9562 compliant solution.
 ```php
 <?php
 function uuid4()
@@ -205,6 +205,5 @@ var_dump($uuid_version); // int(4)
 
 14 bits dedicated to sub-second precision provide 100 nanosecond resolution. The `unix_ts_ms` and `subsec` fields guarantee the order of UUIDs generated within the same timestamp by monotonically incrementing the timer.
 
-[RFC 4122]: http://tools.ietf.org/html/rfc4122
-[draft]: https://github.com/ietf-wg-uuidrev/rfc4122bis
+[RFC 9562]: https://datatracker.ietf.org/doc/rfc9562/
 [stackoverflow uuid4]: https://stackoverflow.com/a/15875555

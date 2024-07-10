@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace UUID;
 
 /**
- * Represents a universally unique identifier (UUID), according to RFC 4122.
+ * Represents a universally unique identifier (UUID), according to RFC 9562.
  *
  * This class provides the static methods `uuid3()`, `uuid4()`, `uuid5()`,
  * `uuid6()`, `uuid7()`, and `uuid8()` for generating version 3, 4, 5,
- * 6 (draft), 7 (draft), and 8 (draft) UUIDs.
+ * 6, 7, and 8 UUIDs.
  *
  * If all you want is a unique ID, you should call `uuid4()`.
  *
- * @link http://tools.ietf.org/html/rfc4122
- * @link https://github.com/ietf-wg-uuidrev/rfc4122bis
+ * @link https://datatracker.ietf.org/doc/rfc9562/
  * @link http://en.wikipedia.org/wiki/Universally_unique_identifier
  */
 class UUID
@@ -22,37 +21,37 @@ class UUID
     /**
      * When this namespace is specified, the name string is a fully-qualified domain name.
      * @var string
-     * @link http://tools.ietf.org/html/rfc4122#appendix-C
+     * @link https://www.rfc-editor.org/rfc/rfc9562.html#name-namespace-id-usage-and-allo
      */
     public const NAMESPACE_DNS = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
     /**
      * When this namespace is specified, the name string is a URL.
      * @var string
-     * @link http://tools.ietf.org/html/rfc4122#appendix-C
+     * @link https://www.rfc-editor.org/rfc/rfc9562.html#name-namespace-id-usage-and-allo
      */
     public const NAMESPACE_URL = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
     /**
      * When this namespace is specified, the name string is an ISO OID.
      * @var string
-     * @link http://tools.ietf.org/html/rfc4122#appendix-C
+     * @link https://www.rfc-editor.org/rfc/rfc9562.html#name-namespace-id-usage-and-allo
      */
     public const NAMESPACE_OID = '6ba7b812-9dad-11d1-80b4-00c04fd430c8';
     /**
      * When this namespace is specified, the name string is an X.500 DN in DER or a text output format.
      * @var string
-     * @link http://tools.ietf.org/html/rfc4122#appendix-C
+     * @link https://www.rfc-editor.org/rfc/rfc9562.html#name-namespace-id-usage-and-allo
      */
     public const NAMESPACE_X500 = '6ba7b814-9dad-11d1-80b4-00c04fd430c8';
     /**
      * The nil UUID is special form of UUID that is specified to have all 128 bits set to zero.
      * @var string
-     * @link http://tools.ietf.org/html/rfc4122#section-4.1.7
+     * @link https://www.rfc-editor.org/rfc/rfc9562.html#name-nil-uuid
      */
     public const NIL = '00000000-0000-0000-0000-000000000000';
     /**
      * The Max UUID is special form of UUID that is specified to have all 128 bits set to one.
      * @var string
-     * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#name-max-uuid
+     * @link https://www.rfc-editor.org/rfc/rfc9562.html#name-max-uuid
      */
     public const MAX = 'FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF';
 
@@ -60,7 +59,7 @@ class UUID
      * 0x01b21dd213814000 is the number of 100-ns intervals between the
      * UUID epoch 1582-10-15 00:00:00 and the Unix epoch 1970-01-01 00:00:00.
      * @var int
-     * @link https://tools.ietf.org/html/rfc4122#section-4.1.4
+     * @link https://www.rfc-editor.org/rfc/rfc9562.html#name-test-vectors
      */
     public const TIME_OFFSET_INT = 0x01b21dd213814000;
 
