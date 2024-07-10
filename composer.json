@@ -1,7 +1,7 @@
 {
     "name": "oittaa/uuid",
     "type": "library",
-    "description": "A small PHP class for generating RFC 4122 version 3, 4, and 5 universally unique identifiers (UUID). Additionally supports draft versions 6, 7, and 8.",
+    "description": "A small PHP class for generating RFC 9562 universally unique identifiers (UUID) from version 3 to version 8.",
     "keywords": [
         "uuid",
         "identifier",
