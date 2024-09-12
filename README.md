@@ -7,7 +7,7 @@ A small PHP class for generating [RFC 9562][RFC 9562] universally unique identif
 
 If all you want is a unique ID, you should call `uuid4()`.
 
-> Implementations SHOULD utilize UUID version 7 instead of UUID version 1 and 6 if possible.
+> Implementations SHOULD utilize UUIDv7 instead of UUIDv1 and UUIDv6 if possible.
 
 If you're regularly generating more than thousand UUIDs per second, you might want to use `uuid8()` instead of `uuid7()`. This implementation of `uuid8()` sacrifices some entropy compared to `uuid7()`, but offers 100 nanosecond granularity while being otherwise compatible.
 
@@ -25,6 +25,34 @@ function uuid4()
 }
 
 echo uuid4();
+```
+
+## Minimal UUID v7 implementation
+
+```php
+<?php
+function uuid7()
+{
+    static $last_timestamp = 0;
+    $unixts_ms = intval(microtime(true) * 1000);
+    if ($last_timestamp >= $unixts_ms) {
+        $unixts_ms = $last_timestamp + 1;
+    }
+    $last_timestamp = $unixts_ms;
+    $data = random_bytes(10);
+    $data[0] = chr((ord($data[0]) & 0x0f) | 0x70); // set version
+    $data[2] = chr((ord($data[2]) & 0x3f) | 0x80); // set variant
+    return vsprintf(
+        '%s%s-%s-%s-%s-%s%s%s',
+        str_split(
+            str_pad(dechex($unixts_ms), 12, '0', \STR_PAD_LEFT) .
+                bin2hex($data),
+            4
+        )
+    );
+}
+
+echo uuid7();
 ```
 
 ## Installation
