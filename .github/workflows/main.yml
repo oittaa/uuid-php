@@ -12,7 +12,7 @@ on:
 
 jobs:
   lint:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
     - name: Setup PHP
@@ -24,10 +24,10 @@ jobs:
       run: phpcs -q --report=checkstyle src/ tests/ | cs2pr
 
   benchmark:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
-        php-versions: ['8.1', '8.2', '8.3']
+        php-versions: ['8.1', '8.2', '8.3', '8.4']
     steps:
     - uses: actions/checkout@v4
     - name: Setup PHP
@@ -44,10 +44,10 @@ jobs:
 
 
   unit-tests:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
-        php-versions: ['8.1', '8.2', '8.3']
+        php-versions: ['8.1', '8.2', '8.3', '8.4']
     steps:
     - uses: actions/checkout@v4
     - name: Setup PHP
