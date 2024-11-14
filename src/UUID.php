@@ -253,11 +253,17 @@ class UUID
      * Generate a version 8 UUID. A v8 UUID is lexicographically sortable and is
      * designed to encode a Unix timestamp with arbitrary sub-second precision.
      *
+     * @param \DateTime|null $dateTime The time for which the uuid is generated
      * @return string The string standard representation of the UUID
      */
-    public static function uuid8(): string
+    public static function uuid8(\DateTime|null $dateTime=null): string
     {
-        [$unixts, $subsec] = self::getUnixTimeSubsec();
+        if(!is_null($dateTime)){
+            $unixts = $dateTime->getTimestamp(); // Получаем секунды
+            $subsec = (int) ($dateTime->format('u') . "0"); // Получаем микросекунды
+        } else {
+            [$unixts, $subsec] = self::getUnixTimeSubsec();
+        }
         $unixtsms = $unixts * 1000 + intdiv($subsec, self::V8_SUBSEC_RANGE);
         $subsec = self::encodeSubsec($subsec % self::V8_SUBSEC_RANGE);
         $subsecA = $subsec >> 2;
@@ -268,6 +274,36 @@ class UUID
         $uhex .= '8' . str_pad(dechex($subsecA), 3, '0', \STR_PAD_LEFT);
         $uhex .= bin2hex($randB);
         return self::uuidFromHex($uhex, 8);
+    }
+
+    /**
+     * The first uuid for a given time is generated, which allows you to use the v8 uuid for time search
+     * A v8 UUID is lexicographically sortable and is
+     * designed to encode a Unix timestamp with arbitrary sub-second precision.
+     *
+     * @param \DateTime|null $dateTime
+     * @return string
+     */
+    public static function firstUuid8(\DateTime|null $dateTime=null): string
+    {
+        $uuid = self::uuid8($dateTime);
+        $zero = '000-000000000000';
+        return substr_replace($uuid, $zero, -strlen($zero));
+    }
+
+    /**
+     * Generate The last uuid for the given time is generated, which allows you to use uuidv8 for time search.
+     * A v8 UUID is lexicographically sortable and is
+     * designed to encode a Unix timestamp with arbitrary sub-second precision.
+     *
+     * @param \DateTime|null $dateTime
+     * @return string
+     */
+    public static function lastUuid8(\DateTime|null $dateTime=null): string
+    {
+        $uuid = self::uuid8($dateTime);
+        $last = 'fff-ffffffffffff';
+        return substr_replace($uuid, $last, -strlen($last));
     }
 
     /**
