@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace UUID\Test;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use UUID\UUID;
 
-/**
- * @covers \UUID\UUID
- */
+#[CoversClass(UUID::class)]
 final class UuidTest extends TestCase
 {
     public function testCanGenerateValidVersion3()
