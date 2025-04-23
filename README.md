@@ -104,6 +104,12 @@ $uuid8_first = UUID::uuid8();
 echo $uuid8_first . "\n"; // e.g. 017f22e2-79b0-8cc3-98c4-dc0c0c07398f
 $uuid8_second = UUID::uuid8();
 var_dump($uuid8_first < $uuid8_second); // bool(true)
+
+$firstDate = \DateTime::createFromFormat('Y-m-d H:i:s.u', '2024-01-01 13:12:12.129817');
+$uuid8_from_date = UUID::uuid8($firstDate);
+$uuid8_zero_value = UUID::firstUuid8($firstDate) // 018cc527-3c61-8d12-9000-000000000000 first uuid from this time
+$uuid8_last_value = UUID::lastUuid8($firstDate) //  018cc527-3c61-8d12-9fff-ffffffffffff last uuid from this time
+var_dump(($uuid8_zero_value < $uuid8_from_date) && ($uuid8_from_date < $uuid8_last_value)); // bool(true)
 ```
 
 ### Tools
