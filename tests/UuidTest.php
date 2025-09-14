@@ -107,6 +107,84 @@ final class UuidTest extends TestCase
         }
     }
 
+    public function testCanGenerateValidVersion8FromTime()
+    {
+        $firstDate = \DateTime::createFromFormat('Y-m-d H:i:s', '2024-01-01 13:12:12');
+        $uuid1 = UUID::uuid8($firstDate);
+        for ($x = 0; $x < 1000; $x++) {
+            $this->assertMatchesRegularExpression(
+                '/^[0-9a-f]{8}\-[0-9a-f]{4}\-8[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}$/',
+                $uuid1
+            );
+            $secondDate = clone $firstDate; // Клонируем первый объект
+            $secondDate->modify('+524 milliseconds');
+
+            $uuid2 = UUID::uuid8($secondDate);
+            $this->assertGreaterThan(
+                $uuid1,
+                $uuid2
+            );
+            $this->assertLessThan(
+                0,
+                UUID::cmp($uuid1, $uuid2)
+            );
+            $uuid1 = $uuid2;
+            $firstDate = clone $secondDate;
+        }
+    }
+
+    public function testCanGenerateValidVersion8ZeroValue()
+    {
+        $firstDate = \DateTime::createFromFormat('Y-m-d H:i:s.u', '2024-01-01 13:12:12.129817');
+        for ($x = 0; $x < 1000; $x++) {
+            $uuidZero = UUID::firstUuid8($firstDate);
+            $this->assertMatchesRegularExpression(
+                '/^[0-9a-f]{8}\-[0-9a-f]{4}\-8[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}$/',
+                $uuidZero
+            );
+            $uuid = UUID::uuid8($firstDate);
+            $this->assertGreaterThan(
+                $uuidZero,
+                $uuid
+            );
+            $firstDate->modify('+564 milliseconds');
+
+        }
+    }
+
+    public function testCanGenerateValidVersion8LastVersion()
+    {
+        $firstDate = \DateTime::createFromFormat('Y-m-d H:i:s.u', '2024-01-01 13:12:12.129817');
+        for ($x = 0; $x < 1000; $x++) {
+            $uuidZero = UUID::lastUuid8($firstDate);
+            $this->assertMatchesRegularExpression(
+                '/^[0-9a-f]{8}\-[0-9a-f]{4}\-8[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}$/',
+                $uuidZero
+            );
+            $uuid = UUID::uuid8($firstDate);
+            $this->assertGreaterThan(
+                $uuid,
+                $uuidZero
+            );
+            $firstDate->modify('+564 milliseconds');
+
+        }
+    }
+
+    public function testCheckValidDateVersion8()
+    {
+        $firstDate = \DateTime::createFromFormat('Y-m-d H:i:s', '2024-01-01 13:12:12');
+        for ($x = 0; $x < 100; $x++) {
+            $timestamp = $firstDate->getTimestamp();
+            $microseconds = $firstDate->format('u');
+            $checkTimestamp = $timestamp + ($microseconds / 1000000);
+            $uuid = UUID::uuid8($firstDate);
+            $timeFromUuid = UUID::getTime($uuid);
+            $this->assertEquals($checkTimestamp,$timeFromUuid,"UUIDV8 get not true date");
+            $firstDate->modify('+564 milliseconds');
+        }
+    }
+
     public function testCannotBeCreatedFromInvalidNamespace()
     {
         $this->expectException(\InvalidArgumentException::class);
